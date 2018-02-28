@@ -11,6 +11,10 @@ jobs:
       - checkout
       # Download and cache dependencies
       - run: npm install
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - workspace
 
 
   lint:
