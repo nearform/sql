@@ -1,0 +1,30 @@
+{
+  "name": "@nearform/sql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/SQL.js",
+  "scripts": {
+    "test": "lab -c -t 95",
+    "coverage": "lab -c -t 95 -r html -o docs/coverage.html",
+    "lint": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nearform/sql.git"
+  },
+  "author": "nearForm Ltd",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nearform/sql/issues"
+  },
+  "homepage": "https://github.com/nearform/sql#readme",
+  "devDependencies": {
+    "lab": "^14.2.0",
+    "standard": "^11.0.0"
+  },
+  "standard": {
+    "ignore": [
+      "docs/*"
+    ]
+  }
+}

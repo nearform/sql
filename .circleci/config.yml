@@ -1,0 +1,51 @@
+defaults: &defaults
+  working_directory: ~/workspace
+  docker:
+    - image: circleci/node:latest
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - run: npm install
+
+
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: npm run lint
+
+  test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: npm run test
+
+  coverage:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: npm run coverage
+
+workflows:
+  version: 2
+  build-lint-test:
+    jobs:
+      - build
+      - lint:
+          requires:
+            - build
+      - test:
+          requires:
+            - build
+      - coverage:
+          requires:
+            - lint
+            - test

@@ -1,0 +1,8 @@
+.idea/
+.vscode/
+.DS_Store
+
+*.log
+docs/coverage.html
+
+node_modules
