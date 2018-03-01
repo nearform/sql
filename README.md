@@ -7,14 +7,6 @@ SQL injection protection module
 npm install @nearform/sql
 ```
 
-### Testing, linting, & coverage
-This module can be tested and reported on in a variety of ways...
-```sh
-npm run test        # runs lab based unit test suite.
-npm run coverage    # generates a coverage report in docs dir.
-npm run lint        # lints via standardJS.
-```
-
 ## Usage
 ```js
 const SQL = require('@nearform/sql')
@@ -55,6 +47,14 @@ updates.push(SQL`email = ${email}`)
 
 sql.append(sql.glue(updates, ' , '))
 sql.append(SQL`WHERE id = ${userId}`)
+```
+
+## Testing, linting, & coverage
+This module can be tested and reported on in a variety of ways...
+```sh
+npm run test        # runs tap based unit test suite.
+npm run coverage    # generates a coverage report in docs dir.
+npm run lint        # lints via standardJS.
 ```
 
 # License
