@@ -1,4 +1,6 @@
 # SQL
+[![build status][1]][2] [![js-standard-style][3]][4]
+
 SQL injection protection module
 
 ## Install
@@ -58,6 +60,10 @@ npm run lint        # lints via standardJS.
 ```
 
 # License
-Copyright nearForm 2018. Licensed under [MIT][License]
+Copyright nearForm 2018. Licensed under 
+[Apache 2.0](<https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)>)
 
-[License]: ./LICENSE.md 
+[1]: https://circleci.com/gh/nearform/sql/tree/master.svg?style=shield&circle-token=ec5a946d225c797d503fc5a748137db7b82ab47f
+[2]: https://circleci.com/gh/nearform/sql
+[3]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square
+[4]: https://github.com/feross/standard
