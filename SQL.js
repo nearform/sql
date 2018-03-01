@@ -5,26 +5,28 @@ class SqlStatement {
   }
 
   glue (pieces, separator) {
-    const result = pieces
-      .map((piece) => {
-        piece.strings = piece.strings.filter(s => !!s.trim())
+    const result = { strings: [], values: [] }
 
-        return piece
-      })
-      .reduce((res, current) => {
-        res.strings = res.strings.concat(current.strings)
-        res.values = res.values.concat(current.values)
+    for (let i = 0; i < pieces.length; i++) {
+      let strings = pieces[i].strings.filter(s => !!s.trim())
 
-        return res
-      }, { strings: [], values: [] })
+      result.strings = result.strings.concat(strings)
+      result.values = result.values.concat(pieces[i].values)
+    }
 
-    result.strings = result.strings.map((value, index) => {
-      if (index === 0 || value.trim() === '') {
-        return value
+    let strings = []
+    for (let i = 0; i < result.strings.length; i++) {
+      let value = result.strings[i]
+
+      if (i === 0 || value.trim() === '') {
+        strings.push(value)
+        continue
       }
 
-      return separator + value
-    }).concat([' '])
+      strings.push(separator + value)
+    }
+
+    result.strings = strings.concat([' '])
 
     return new SqlStatement(
       result.strings,
@@ -33,9 +35,13 @@ class SqlStatement {
   }
 
   get text () {
-    return this.strings.reduce((prev, curr, i) => {
-      return prev + '$' + i + curr
-    }).replace(/^\s+/, '')
+    let text = this.strings[0]
+
+    for (let i = 1; i < this.strings.length; i++) {
+      text += '$' + i + this.strings[i]
+    }
+
+    return text.replace(/^\s+/, '')
   }
 
   append (statement) {
