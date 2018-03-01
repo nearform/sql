@@ -3,6 +3,6 @@
 .DS_Store
 
 *.log
-docs/coverage.html
+.nyc_output
 
 node_modules
