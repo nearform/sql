@@ -1,7 +1,16 @@
 # SQL
 [![build status][1]][2] [![js-standard-style][3]][4]
 
-SQL injection protection module
+A simple SQL injection protection module that allows you to use ES6 template strings for escaped statements. Works with [postgres](https://www.npmjs.com/package/pg).
+
+1. [Install](#install)
+2. [Usage](#usage)
+3. [Methods](#methods)
+    1. [append](#appendstatement)
+    2. [glue](#gluepieces-separator)
+4. [How it works?](#how-it-works?)
+5. [Testing, linting, & coverage](#testing-linting--coverage)
+6. [License](#license)
 
 ## Install
 
@@ -49,6 +58,18 @@ updates.push(SQL`email = ${email}`)
 
 sql.append(sql.glue(updates, ' , '))
 sql.append(SQL`WHERE id = ${userId}`)
+```
+
+## How it works?
+The SQL template string tag parses query and returns an objects that's understandable by postgres:
+```js
+const username = 'user'
+const email = 'user@email.com'
+const password = 'Password1'
+
+const sql = SQL`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})` // generate SQL query
+sql.text // INSERT INTO users (username, email, password) VALUES ($1 , $2 , $3)
+sql.values // ['user, 'user@email.com', 'Password1']
 ```
 
 ## Testing, linting, & coverage
