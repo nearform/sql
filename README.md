@@ -8,7 +8,7 @@ A simple SQL injection protection module that allows you to use ES6 template str
 3. [Methods](#methods)
     1. [append](#appendstatement)
     2. [glue](#gluepieces-separator)
-4. [How it works?](#how-it-works?)
+4. [How it works?](#how-it-works)
 5. [Testing, linting, & coverage](#testing-linting--coverage)
 6. [License](#license)
 
