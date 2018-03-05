@@ -1,0 +1,21 @@
+{
+  "dbms": "postgresql",
+  "level": 1,
+  "risk": 1,
+  "verbose": 0,
+  "timeout": 5,
+  "urls": [
+    {
+      "url": "http://localhost:8080/users?page=1&limit=10",
+      "method": "GET",
+      "params": "page,limit"
+    },
+    {
+      "url": "http://localhost:8080/users",
+      "method": "POST",
+      "headers": "Content-Type: application/json",
+      "params": "username,password,email",
+      "data": "{\"username\":\"user\",\"password\":\"12345\",\"email\":\"user@email.com\"}"
+    }
+  ]
+}

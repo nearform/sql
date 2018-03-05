@@ -2,6 +2,14 @@ defaults: &defaults
   working_directory: ~/workspace
   docker:
     - image: circleci/node:latest
+        environment:
+        - PGHOST: 127.0.0.1
+        - PGUSER: root
+        - PGDB: sqlmap
+    - image: circleci/postgres:9.6.2-alpine
+        environment:
+        - POSTGRES_USER: root
+        - POSTGRES_DB: sqlmap
 
 version: 2
 jobs:
@@ -38,6 +46,13 @@ jobs:
           at: ~/
       - run: npm run coverage
 
+  test-security:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: npm run test:security
+
 workflows:
   version: 2
   build-lint-test:
@@ -47,6 +62,9 @@ workflows:
           requires:
             - build
       - test:
+          requires:
+            - build
+      - test-security:
           requires:
             - build
       - coverage:
