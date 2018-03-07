@@ -75,9 +75,10 @@ sql.values // ['user, 'user@email.com', 'Password1']
 ## Testing, linting, & coverage
 This module can be tested and reported on in a variety of ways...
 ```sh
-npm run test        # runs tap based unit test suite.
-npm run coverage    # generates a coverage report in docs dir.
-npm run lint        # lints via standardJS.
+npm run test            # runs tap based unit test suite.
+npm run test:security   # runs sqlmap security tests.
+npm run coverage        # generates a coverage report in docs dir.
+npm run lint            # lints via standardJS.
 ```
 
 # License
