@@ -8,7 +8,8 @@
     "test:security": "node ./sqlmap/sqlmap.js",
     "pretest:security": "napa sqlmapproject/sqlmap && node ./sqlmap/db-init.js",
     "coverage": "tap *.test.js --coverage",
-    "lint": "standard"
+    "lint": "standard",
+    "benchmark": "node benchmark/index.js"
   },
   "repository": {
     "type": "git",
@@ -22,10 +23,12 @@
   "homepage": "https://github.com/nearform/sql#readme",
   "devDependencies": {
     "async": "^2.6.0",
+    "benchmark": "^2.1.4",
     "hapi": "^16.6.2",
     "jsonfile": "^4.0.0",
     "napa": "^3.0.0",
     "pg": "^7.4.1",
+    "sql-template-strings": "^2.2.2",
     "standard": "^11.0.0",
     "tap": "^11.1.1"
   },

@@ -10,7 +10,8 @@ A simple SQL injection protection module that allows you to use ES6 template str
     2. [glue](#gluepieces-separator)
 4. [How it works?](#how-it-works)
 5. [Testing, linting, & coverage](#testing-linting--coverage)
-6. [License](#license)
+6. [Benchmark](#benchmark)
+7. [License](#license)
 
 ## Install
 
@@ -80,6 +81,9 @@ npm run test:security   # runs sqlmap security tests.
 npm run coverage        # generates a coverage report in docs dir.
 npm run lint            # lints via standardJS.
 ```
+
+## Benchmark
+Find more about `@nearform/sql` speed [here](benchmark)
 
 # License
 Copyright nearForm 2018. Licensed under 
