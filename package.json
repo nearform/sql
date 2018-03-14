@@ -2,7 +2,7 @@
   "name": "@nearform/sql",
   "version": "1.0.0",
   "description": "",
-  "main": "lib/SQL.js",
+  "main": "./SQL.js",
   "scripts": {
     "test": "tap *.test.js",
     "test:security": "node ./sqlmap/sqlmap.js",
