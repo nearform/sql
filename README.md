@@ -1,7 +1,9 @@
 # SQL
-[![build status][1]][2] [![js-standard-style][3]][4]
+A simple SQL injection protection module that allows you to use ES6 template strings for escaped statements. Works with [pg](https://www.npmjs.com/package/pg) library.
 
-A simple SQL injection protection module that allows you to use ES6 template strings for escaped statements. Works with [postgres](https://www.npmjs.com/package/pg).
+[![npm version][1]][2] [![build status][3]][4] [![js-standard-style][5]][6]
+
+
 
 1. [Install](#install)
 2. [Usage](#usage)
@@ -62,7 +64,7 @@ sql.append(SQL`WHERE id = ${userId}`)
 ```
 
 ## How it works?
-The SQL template string tag parses query and returns an objects that's understandable by postgres:
+The SQL template string tag parses query and returns an objects that's understandable by [pg](https://www.npmjs.com/package/pg) library:
 ```js
 const username = 'user'
 const email = 'user@email.com'
@@ -89,7 +91,9 @@ Find more about `@nearform/sql` speed [here](benchmark)
 Copyright nearForm 2018. Licensed under 
 [Apache 2.0](<https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)>)
 
-[1]: https://circleci.com/gh/nearform/sql/tree/master.svg?style=shield&circle-token=ec5a946d225c797d503fc5a748137db7b82ab47f
-[2]: https://circleci.com/gh/nearform/sql
-[3]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square
-[4]: https://github.com/feross/standard
+[1]: https://img.shields.io/npm/v/@nearform/sql.svg?style=flat-square
+[2]: https://npmjs.org/package/@nearform/sql
+[3]: https://circleci.com/gh/nearform/sql/tree/master.svg?style=shield&circle-token=ec5a946d225c797d503fc5a748137db7b82ab47f
+[4]: https://circleci.com/gh/nearform/sql
+[5]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square
+[6]: https://github.com/feross/standard
