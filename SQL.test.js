@@ -16,6 +16,22 @@ test('SQL helper - build complex query with append', (t) => {
   t.end()
 })
 
+test('SQL helper - multiline', (t) => {
+  const name = 'Team 5'
+  const description = 'description'
+  const teamId = 7
+  const organizationId = 'WONKA'
+
+  const sql = SQL`
+    UPDATE teams SET name = ${name}, description = ${description}
+    WHERE id = ${teamId} AND org_id = ${organizationId}
+  `
+
+  t.equal(sql.text, 'UPDATE teams SET name = $1, description = $2\nWHERE id = $3 AND org_id = $4')
+  t.deepEqual(sql.values, [name, description, teamId, organizationId])
+  t.end()
+})
+
 test('SQL helper - build complex query with glue', (t) => {
   const name = 'Team 5'
   const description = 'description'

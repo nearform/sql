@@ -41,7 +41,7 @@ class SqlStatement {
       text += '$' + i + this.strings[i]
     }
 
-    return text.replace(/^\s+/, '')
+    return text.replace(/^\s+|\s+$/mg, '')
   }
 
   append (statement) {
