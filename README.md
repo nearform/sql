@@ -31,7 +31,11 @@ const username = 'user'
 const email = 'user@email.com'
 const password = 'Password1'
 
-const sql = SQL`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})` // generate SQL query
+// generate SQL query
+const sql = SQL`
+  INSERT INTO users (username, email, password)
+  VALUES (${username},${email},${password})
+`
 
 db.query(sql) // execute query
 ```
