@@ -10,7 +10,8 @@ const password = 'Password1'
 
 suite
   .add('@nearform/sql', function () {
-    SQL1`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})`
+    const result = SQL1`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})`
+    result.text
   })
   .add('sql-template-strings', function () {
     SQL2`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})`
