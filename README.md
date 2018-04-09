@@ -7,6 +7,7 @@ A simple SQL injection protection module that allows you to use ES6 template str
 
 1. [Install](#install)
 2. [Usage](#usage)
+    1. [Linting](#linting)
 3. [Methods](#methods)
     1. [append](#appendstatement)
     2. [glue](#gluepieces-separator)
@@ -38,6 +39,17 @@ const sql = SQL`
 `
 
 db.query(sql) // execute query
+```
+
+### Linting
+We recommend using [eslint-plugin-sql](https://github.com/gajus/eslint-plugin-sql#eslint-plugin-sql-rules-no-unsafe-query) to prevent cases in which the SQL tag is forgotten to be added in front of template strings. Eslint will fail if you write SQL queries without `sql` tag in front of the string.
+
+```js
+`SELECT 1`
+// fails - Message: Use "sql" tag
+
+sql`SELECT 1`
+// passes
 ```
 
 ## Methods
