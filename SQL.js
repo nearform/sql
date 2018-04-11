@@ -39,8 +39,9 @@ class SqlStatement {
 
     for (var i = 1; i < this.strings.length; i++) {
       let delimiter = '?'
-      if (type === 'pg')
+      if (type === 'pg') {
         delimiter = '$' + i
+      }
 
       text += delimiter + this.strings[i]
     }
