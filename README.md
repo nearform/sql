@@ -26,8 +26,6 @@ npm install @nearform/sql
 ```js
 const SQL = require('@nearform/sql')
 
-const db = connectDB() // your db instance
-
 const username = 'user'
 const email = 'user@email.com'
 const password = 'Password1'
@@ -38,7 +36,11 @@ const sql = SQL`
   VALUES (${username},${email},${password})
 `
 
-db.query(sql) // execute query
+pg.query(sql) // execute query in pg
+
+mysql.query(sql) // execute query in mysql
+
+mysql2.query(sql) // execute query in mysql2
 ```
 
 ### Linting
@@ -87,7 +89,8 @@ const email = 'user@email.com'
 const password = 'Password1'
 
 const sql = SQL`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})` // generate SQL query
-sql.text // INSERT INTO users (username, email, password) VALUES ($1 , $2 , $3)
+sql.text // INSERT INTO users (username, email, password) VALUES ($1 , $2 , $3) - for pg
+sql.sql // INSERT INTO users (username, email, password) VALUES (? , ? , ?) - for mysql and mysql2
 sql.values // ['user, 'user@email.com', 'Password1']
 ```
 
