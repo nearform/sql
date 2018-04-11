@@ -1,5 +1,5 @@
 # SQL
-A simple SQL injection protection module that allows you to use ES6 template strings for escaped statements. Works with [pg](https://www.npmjs.com/package/pg) library.
+A simple SQL injection protection module that allows you to use ES6 template strings for escaped statements. Works with [pg](https://www.npmjs.com/package/pg), [mysql](https://www.npmjs.com/package/mysql) and [mysql2](https://www.npmjs.com/package/mysql2) library.
 
 [![npm version][1]][2] [![build status][3]][4] [![js-standard-style][5]][6]
 

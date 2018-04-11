@@ -44,6 +44,16 @@ class SqlStatement {
     return text.replace(/^\s+|\s+$/mg, '')
   }
 
+  get sql () {
+    let text = this.strings[0]
+
+    for (let i = 1; i < this.strings.length; i++) {
+      text += '?' + this.strings[i]
+    }
+
+    return text.replace(/^\s+|\s+$/mg, '')
+  }
+
   append (statement) {
     const last = this.strings[this.strings.length - 1]
     const [first, ...rest] = statement.strings
