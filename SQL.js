@@ -38,7 +38,13 @@ class SqlStatement {
     let text = this.strings[0]
 
     for (let i = 1; i < this.strings.length; i++) {
-      text += '$' + i + this.strings[i]
+      const value = this.values[i - 1]
+
+      if (typeof value === 'object' && typeof value.__raw === 'string') {
+        text += value.__raw + this.strings[i]
+      } else {
+        text += '$' + i + this.strings[i]
+      }
     }
 
     return text.replace(/^\s+|\s+$/mg, '')
