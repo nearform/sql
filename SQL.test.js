@@ -100,3 +100,26 @@ test('SQL helper - build complex query with append', (t) => {
   t.deepEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
 })
+
+test('SQL helper - supports raw SQL values', (t) => {
+  const v1 = 'v1'
+  const v2 = 'v2'
+  const v3 = {__raw: 'raw3'}
+  const v4 = 'v4'
+  const v5 = 'v5'
+  const v6 = {__raw: 'raw6'}
+  const v7 = 'v7'
+
+  const sql = SQL`TEST QUERY glue pieces FROM `
+  sql.append(SQL`v1 = ${v1}, `)
+  sql.append(SQL`v2 = ${v2}, `)
+  sql.append(SQL`v3 = ${v3}, `)
+  sql.append(SQL`v4 = ${v4}, `)
+  sql.append(SQL`v5 = ${v5} `)
+  sql.append(SQL`WHERE v6 = ${v6} `)
+  sql.append(SQL`AND v7 = ${v7}`)
+
+  t.equal(sql.text, 'TEST QUERY glue pieces FROM v1 = $1, v2 = $2, v3 = raw3, v4 = $3, v5 = $4 WHERE v6 = raw6 AND v7 = $5')
+  t.deepEqual(sql.values, [v1, v2, v4, v5, v7])
+  t.end()
+})

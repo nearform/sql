@@ -1,7 +1,11 @@
+function isRawValue (value) {
+  return typeof value === 'object' && typeof value.__raw === 'string'
+}
+
 class SqlStatement {
   constructor (strings, values) {
     this.strings = strings
-    this.values = values
+    this._values = values
   }
 
   glue (pieces, separator) {
@@ -36,12 +40,28 @@ class SqlStatement {
 
   get text () {
     let text = this.strings[0]
+    let parameter = 0
 
     for (let i = 1; i < this.strings.length; i++) {
-      text += '$' + i + this.strings[i]
+      const value = this._values[i - 1]
+
+      if (isRawValue(value)) {
+        text += value.__raw + this.strings[i]
+      } else {
+        parameter++
+        text += '$' + parameter + this.strings[i]
+      }
     }
 
     return text.replace(/^\s+|\s+$/mg, '')
+  }
+
+  get values () {
+    return this._values.filter(v => !isRawValue(v))
+  }
+
+  get rawValues () {
+    return this._values.filter(isRawValue)
   }
 
   append (statement) {
@@ -54,7 +74,7 @@ class SqlStatement {
       ...rest
     ]
 
-    this.values.push.apply(this.values, statement.values)
+    this._values.push.apply(this._values, statement._values)
 
     return this
   }

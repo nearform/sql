@@ -41,6 +41,23 @@ const sql = SQL`
 db.query(sql) // execute query
 ```
 
+### Raw values
+
+If you need to pass a dynamic string to the query that MUST NOT be passed as query parameter, enclose the parameter in a object with the `__raw` property.
+
+```js
+const SQL = require('@nearform/sql')
+
+const db = connectDB() // your db instance
+
+const field = 'username'
+
+// generate SQL query
+const sql = SQL`SELECT ${{__raw: field}} FROM users`
+
+db.query(sql) // execute query
+```
+
 ### Linting
 We recommend using [eslint-plugin-sql](https://github.com/gajus/eslint-plugin-sql#eslint-plugin-sql-rules-no-unsafe-query) to prevent cases in which the SQL tag is forgotten to be added in front of template strings. Eslint will fail if you write SQL queries without `sql` tag in front of the string.
 
