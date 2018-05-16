@@ -119,7 +119,7 @@ test('SQL helper - supports raw SQL values', (t) => {
   sql.append(SQL`WHERE v6 = ${v6} `)
   sql.append(SQL`AND v7 = ${v7}`)
 
-  t.equal(sql.text, 'TEST QUERY glue pieces FROM v1 = $1, v2 = $2, v3 = raw3, v4 = $4, v5 = $5 WHERE v6 = raw6 AND v7 = $7')
-  t.deepEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
+  t.equal(sql.text, 'TEST QUERY glue pieces FROM v1 = $1, v2 = $2, v3 = raw3, v4 = $3, v5 = $4 WHERE v6 = raw6 AND v7 = $5')
+  t.deepEqual(sql.values, [v1, v2, v4, v5, v7])
   t.end()
 })
