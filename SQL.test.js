@@ -100,3 +100,28 @@ test('SQL helper - build complex query with append', (t) => {
   t.deepEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
 })
+
+test('SQL helper - build complex query with append passing simple strings and template strings', (t) => {
+  const v1 = 'v1'
+  const v2 = 'v2'
+  const v3 = 'v3'
+  const v4 = 'v4'
+  const v5 = 'v5'
+  const v6 = 'v6'
+  const v7 = 'v7'
+
+  const sql = SQL`TEST QUERY glue pieces FROM `
+  sql.append(SQL`v1 = ${v1}, `)
+  sql.append(SQL`v2 = ${v2}, `)
+  sql.append(SQL`v3 = ${v3}, `)
+  sql.append(SQL`v4 = ${v4}, `)
+  sql.append(SQL`v5 = ${v5}, `)
+  sql.append(`v6 = v6 `)
+  sql.append(SQL`WHERE v6 = ${v6} `)
+  sql.append(SQL`AND v7 = ${v7} `)
+  sql.append(`AND v8 = v8`)
+
+  t.equal(sql.text, 'TEST QUERY glue pieces FROM v1 = $1, v2 = $2, v3 = $3, v4 = $4, v5 = $5, v6 = v6 WHERE v6 = $6 AND v7 = $7 AND v8 = v8')
+  t.deepEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
+  t.end()
+})

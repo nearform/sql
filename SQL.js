@@ -45,6 +45,16 @@ class SqlStatement {
   }
 
   append (statement) {
+    if (!statement) {
+      return this
+    }
+
+    if (!(statement instanceof SqlStatement)) {
+      this.strings[this.strings.length - 1] += statement
+
+      return this
+    }
+
     const last = this.strings[this.strings.length - 1]
     const [first, ...rest] = statement.strings
 
