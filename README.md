@@ -23,6 +23,7 @@ npm install @nearform/sql
 ```
 
 ## Usage
+
 ```js
 const SQL = require('@nearform/sql')
 
@@ -53,13 +54,14 @@ sql`SELECT 1`
 ```
 
 ## Methods
-### append(statement)
+### append(statement[, options])
 ```js
 const username = 'user1'
 const email = 'user1@email.com'
 const userId = 1
 
 const sql = SQL`UPDATE users SET name = ${username}, email = ${email} `
+sql.append(SQL`SET ${dynamicName} = '2'`, { unsafe: true })
 sql.append(SQL`WHERE id = ${userId}`)
 ```
 
@@ -104,7 +106,7 @@ npm run lint            # lints via standardJS.
 Find more about `@nearform/sql` speed [here](benchmark)
 
 # License
-Copyright nearForm 2018. Licensed under 
+Copyright nearForm 2018. Licensed under
 [Apache 2.0](<https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)>)
 
 [1]: https://img.shields.io/npm/v/@nearform/sql.svg?style=flat-square
