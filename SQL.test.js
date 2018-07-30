@@ -132,7 +132,7 @@ test('SQL helper - will throw an error if append is called without using SQL', (
     sql.append(`v1 = v1`)
     t.fail('showld throw an error when passing strings not prefixed with SQL')
   } catch (e) {
-    t.equal(e.message, '"append" accept only template string prefixed with SQL (SQL`...`)')
+    t.equal(e.message, '"append" accepts only template string prefixed with SQL (SQL`...`)')
   }
   t.end()
 })

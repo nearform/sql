@@ -1,5 +1,5 @@
 class SqlStatement {
-  constructor (strings, values, expression) {
+  constructor (strings, values) {
     this.strings = strings
     this.values = values
   }
@@ -50,7 +50,7 @@ class SqlStatement {
     }
 
     if (!(statement instanceof SqlStatement)) {
-      throw new Error('"append" accept only template string prefixed with SQL (SQL`...`)')
+      throw new Error('"append" accepts only template string prefixed with SQL (SQL`...`)')
     }
 
     if (options && options.unsafe === true) {
