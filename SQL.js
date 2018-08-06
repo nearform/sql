@@ -44,7 +44,29 @@ class SqlStatement {
     return text.replace(/^\s+|\s+$/mg, '')
   }
 
-  append (statement) {
+  append (statement, options) {
+    if (!statement) {
+      return this
+    }
+
+    if (!(statement instanceof SqlStatement)) {
+      throw new Error('"append" accepts only template string prefixed with SQL (SQL`...`)')
+    }
+
+    if (options && options.unsafe === true) {
+      const text = statement.strings.reduce((acc, string, i) => {
+        acc = `${acc}${string}${statement.values[i] ? statement.values[i] : ''}`
+        return acc
+      }, '')
+
+      const strings = this.strings.slice(0)
+      strings[this.strings.length - 1] += text
+
+      this.strings = strings
+
+      return this
+    }
+
     const last = this.strings[this.strings.length - 1]
     const [first, ...rest] = statement.strings
 
