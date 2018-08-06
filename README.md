@@ -1,5 +1,5 @@
 # SQL
-A simple SQL injection protection module that allows you to use ES6 template strings for escaped statements. Works with [pg](https://www.npmjs.com/package/pg) library.
+A simple SQL injection protection module that allows you to use ES6 template strings for escaped statements. Works with [pg](https://www.npmjs.com/package/pg), [mysql](https://www.npmjs.com/package/mysql) and [mysql2](https://www.npmjs.com/package/mysql2) library.
 
 [![npm version][1]][2] [![build status][3]][4] [![js-standard-style][5]][6]
 
@@ -27,8 +27,6 @@ npm install @nearform/sql
 ```js
 const SQL = require('@nearform/sql')
 
-const db = connectDB() // your db instance
-
 const username = 'user'
 const email = 'user@email.com'
 const password = 'Password1'
@@ -39,7 +37,11 @@ const sql = SQL`
   VALUES (${username},${email},${password})
 `
 
-db.query(sql) // execute query
+pg.query(sql) // execute query in pg
+
+mysql.query(sql) // execute query in mysql
+
+mysql2.query(sql) // execute query in mysql2
 ```
 
 ### Linting
@@ -89,7 +91,8 @@ const email = 'user@email.com'
 const password = 'Password1'
 
 const sql = SQL`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})` // generate SQL query
-sql.text // INSERT INTO users (username, email, password) VALUES ($1 , $2 , $3)
+sql.text // INSERT INTO users (username, email, password) VALUES ($1 , $2 , $3) - for pg
+sql.sql // INSERT INTO users (username, email, password) VALUES (? , ? , ?) - for mysql and mysql2
 sql.values // ['user, 'user@email.com', 'Password1']
 ```
 

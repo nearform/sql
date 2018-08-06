@@ -34,14 +34,27 @@ class SqlStatement {
     )
   }
 
-  get text () {
+  generateString (type) {
     let text = this.strings[0]
 
-    for (let i = 1; i < this.strings.length; i++) {
-      text += '$' + i + this.strings[i]
+    for (var i = 1; i < this.strings.length; i++) {
+      let delimiter = '?'
+      if (type === 'pg') {
+        delimiter = '$' + i
+      }
+
+      text += delimiter + this.strings[i]
     }
 
     return text.replace(/^\s+|\s+$/mg, '')
+  }
+
+  get text () {
+    return this.generateString('pg')
+  }
+
+  get sql () {
+    return this.generateString('mysql')
   }
 
   append (statement, options) {

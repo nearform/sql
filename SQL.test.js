@@ -12,6 +12,7 @@ test('SQL helper - build complex query with append', (t) => {
   sql.append(SQL`WHERE id = ${teamId} AND org_id = ${organizationId}`)
 
   t.equal(sql.text, 'UPDATE teams SET name = $1, description = $2 WHERE id = $3 AND org_id = $4')
+  t.equal(sql.sql, 'UPDATE teams SET name = ?, description = ? WHERE id = ? AND org_id = ?')
   t.deepEqual(sql.values, [name, description, teamId, organizationId])
   t.end()
 })
@@ -28,6 +29,7 @@ test('SQL helper - multiline', (t) => {
   `
 
   t.equal(sql.text, 'UPDATE teams SET name = $1, description = $2\nWHERE id = $3 AND org_id = $4')
+  t.equal(sql.sql, 'UPDATE teams SET name = ?, description = ?\nWHERE id = ? AND org_id = ?')
   t.deepEqual(sql.values, [name, description, teamId, organizationId])
   t.end()
 })
@@ -48,6 +50,7 @@ test('SQL helper - build complex query with glue', (t) => {
   sql.append(SQL`WHERE id = ${teamId} AND org_id = ${organizationId}`)
 
   t.equal(sql.text, 'UPDATE teams SET name = $1 , description = $2 WHERE id = $3 AND org_id = $4')
+  t.equal(sql.sql, 'UPDATE teams SET name = ? , description = ? WHERE id = ? AND org_id = ?')
   t.deepEqual(sql.values, [name, description, teamId, organizationId])
   t.end()
 })
@@ -74,6 +77,7 @@ test('SQL helper - build complex query with append and glue', (t) => {
   sql.append(SQL`AND v7 = ${v7}`)
 
   t.equal(sql.text, 'TEST QUERY glue pieces FROM v1 = $1 , v2 = $2 , v3 = $3 , v4 = $4 , v5 = $5 WHERE v6 = $6 AND v7 = $7')
+  t.equal(sql.sql, 'TEST QUERY glue pieces FROM v1 = ? , v2 = ? , v3 = ? , v4 = ? , v5 = ? WHERE v6 = ? AND v7 = ?')
   t.deepEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
 })
@@ -97,6 +101,7 @@ test('SQL helper - build complex query with append', (t) => {
   sql.append(SQL`AND v7 = ${v7}`)
 
   t.equal(sql.text, 'TEST QUERY glue pieces FROM v1 = $1, v2 = $2, v3 = $3, v4 = $4, v5 = $5 WHERE v6 = $6 AND v7 = $7')
+  t.equal(sql.sql, 'TEST QUERY glue pieces FROM v1 = ?, v2 = ?, v3 = ?, v4 = ?, v5 = ? WHERE v6 = ? AND v7 = ?')
   t.deepEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
 })
