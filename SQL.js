@@ -41,6 +41,8 @@ class SqlStatement {
       let delimiter = '?'
       if (type === 'pg') {
         delimiter = '$' + i
+      } else if (type === 'oracle') {
+        delimiter = ':' + i
       }
 
       text += delimiter + this.strings[i]
@@ -55,6 +57,10 @@ class SqlStatement {
 
   get sql () {
     return this.generateString('mysql')
+  }
+
+  get oracle () {
+    return this.generateString('oracle')
   }
 
   append (statement, options) {
