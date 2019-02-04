@@ -1,8 +1,7 @@
 class SqlStatement {
-  constructor (strings, values, type) {
+  constructor (strings, values) {
     this.strings = strings
     this.values = values
-    this.type = type
   }
 
   glue (pieces, separator) {
@@ -35,14 +34,14 @@ class SqlStatement {
     )
   }
 
-  generateString () {
+  generateString (type) {
     let text = this.strings[0]
 
     for (var i = 1; i < this.strings.length; i++) {
       let delimiter = '?'
-      if (this.type === 'pg') {
+      if (type === 'pg') {
         delimiter = '$' + i
-      } else if (this.type === 'oracle') {
+      } else if (type === 'oracle') {
         delimiter = ':' + i
       }
 
@@ -53,7 +52,23 @@ class SqlStatement {
   }
 
   get text () {
-    return this.generateString()
+    return this.generateString('pg')
+  }
+
+  get sql () {
+    return this.generateString('mysql')
+  }
+
+  get pg () {
+    return this.generateString('pg')
+  }
+
+  get mysql () {
+    return this.generateString('mysql')
+  }
+
+  get oracle () {
+    return this.generateString('oracle')
   }
 
   append (statement, options) {
@@ -62,7 +77,7 @@ class SqlStatement {
     }
 
     if (!(statement instanceof SqlStatement)) {
-      throw new Error('"append" accepts only template string prefixed with PG/MYSQL/ORACLE (PG`...`)')
+      throw new Error('"append" accepts only template string prefixed with SQL (SQL`...`)')
     }
 
     if (options && options.unsafe === true) {
@@ -94,16 +109,8 @@ class SqlStatement {
   }
 }
 
-function PG (strings, ...values) {
-  return new SqlStatement(strings, values, 'pg')
+function SQL (strings, ...values) {
+  return new SqlStatement(strings, values)
 }
 
-function MYSQL (strings, ...values) {
-  return new SqlStatement(strings, values, 'mysql')
-}
-
-function ORACLE (strings, ...values) {
-  return new SqlStatement(strings, values, 'oracle')
-}
-
-module.exports = { PG, MYSQL, ORACLE }
+module.exports = SQL
