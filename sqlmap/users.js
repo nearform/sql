@@ -1,5 +1,5 @@
 const { Client } = require('pg')
-const SQL = require('../SQL')
+const { PG } = require('../SQL')
 const config = require('./config')
 
 const client = new Client(config)
@@ -12,7 +12,7 @@ exports.register = function (server, options, next) {
     handler: function (request, reply) {
       const { limit = 10, page = 1 } = request.query
 
-      client.query(SQL`SELECT * FROM users LIMIT ${limit} OFFSET ${limit * (page - 1)}`, (err, users) => {
+      client.query(PG`SELECT * FROM users LIMIT ${limit} OFFSET ${limit * (page - 1)}`, (err, users) => {
         if (err) {
           return reply(err)
         }
@@ -28,7 +28,7 @@ exports.register = function (server, options, next) {
     handler: function (request, reply) {
       const { username, password, email } = request.payload
 
-      client.query(SQL`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})`, (err, user) => {
+      client.query(PG`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})`, (err, user) => {
         if (err) {
           return reply(err)
         }

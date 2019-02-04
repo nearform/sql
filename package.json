@@ -9,7 +9,8 @@
     "pretest:security": "napa sqlmapproject/sqlmap && node ./sqlmap/db-init.js",
     "coverage": "tap *.test.js --coverage",
     "lint": "standard",
-    "benchmark": "node benchmark/index.js"
+    "benchmark": "node benchmark/index.js",
+    "postgres": "docker run --rm -p 5432:5432 --name fastify-postgres postgres:11-alpine"
   },
   "repository": {
     "type": "git",
