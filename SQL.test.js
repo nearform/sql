@@ -13,8 +13,9 @@ test('SQL helper - build complex query with append', (t) => {
 
   t.equal(sql.text, 'UPDATE teams SET name = $1, description = $2 WHERE id = $3 AND org_id = $4')
   t.equal(sql.sql, 'UPDATE teams SET name = ?, description = ? WHERE id = ? AND org_id = ?')
-  t.equal(sql.oracle, 'UPDATE teams SET name = :1, description = :2 WHERE id = :3 AND org_id = :4')
+  t.equal(sql.oracle.sql, 'UPDATE teams SET name = :1, description = :2 WHERE id = :3 AND org_id = :4')
   t.deepEqual(sql.values, [name, description, teamId, organizationId])
+  t.deepEqual(sql.oracle.binds, [name, description, teamId, organizationId])
   t.end()
 })
 
@@ -31,8 +32,9 @@ test('SQL helper - multiline', (t) => {
 
   t.equal(sql.text, 'UPDATE teams SET name = $1, description = $2\nWHERE id = $3 AND org_id = $4')
   t.equal(sql.sql, 'UPDATE teams SET name = ?, description = ?\nWHERE id = ? AND org_id = ?')
-  t.equal(sql.oracle, 'UPDATE teams SET name = :1, description = :2\nWHERE id = :3 AND org_id = :4')
+  t.equal(sql.oracle.sql, 'UPDATE teams SET name = :1, description = :2\nWHERE id = :3 AND org_id = :4')
   t.deepEqual(sql.values, [name, description, teamId, organizationId])
+  t.deepEqual(sql.oracle.binds, [name, description, teamId, organizationId])
   t.end()
 })
 
@@ -53,8 +55,9 @@ test('SQL helper - build complex query with glue', (t) => {
 
   t.equal(sql.text, 'UPDATE teams SET name = $1 , description = $2 WHERE id = $3 AND org_id = $4')
   t.equal(sql.sql, 'UPDATE teams SET name = ? , description = ? WHERE id = ? AND org_id = ?')
-  t.equal(sql.oracle, 'UPDATE teams SET name = :1 , description = :2 WHERE id = :3 AND org_id = :4')
+  t.equal(sql.oracle.sql, 'UPDATE teams SET name = :1 , description = :2 WHERE id = :3 AND org_id = :4')
   t.deepEqual(sql.values, [name, description, teamId, organizationId])
+  t.deepEqual(sql.oracle.binds, [name, description, teamId, organizationId])
   t.end()
 })
 
@@ -81,8 +84,9 @@ test('SQL helper - build complex query with append and glue', (t) => {
 
   t.equal(sql.text, 'TEST QUERY glue pieces FROM v1 = $1 , v2 = $2 , v3 = $3 , v4 = $4 , v5 = $5 WHERE v6 = $6 AND v7 = $7')
   t.equal(sql.sql, 'TEST QUERY glue pieces FROM v1 = ? , v2 = ? , v3 = ? , v4 = ? , v5 = ? WHERE v6 = ? AND v7 = ?')
-  t.equal(sql.oracle, 'TEST QUERY glue pieces FROM v1 = :1 , v2 = :2 , v3 = :3 , v4 = :4 , v5 = :5 WHERE v6 = :6 AND v7 = :7')
+  t.equal(sql.oracle.sql, 'TEST QUERY glue pieces FROM v1 = :1 , v2 = :2 , v3 = :3 , v4 = :4 , v5 = :5 WHERE v6 = :6 AND v7 = :7')
   t.deepEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
+  t.deepEqual(sql.oracle.binds, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
 })
 
@@ -106,8 +110,9 @@ test('SQL helper - build complex query with append', (t) => {
 
   t.equal(sql.text, 'TEST QUERY glue pieces FROM v1 = $1, v2 = $2, v3 = $3, v4 = $4, v5 = $5 WHERE v6 = $6 AND v7 = $7')
   t.equal(sql.sql, 'TEST QUERY glue pieces FROM v1 = ?, v2 = ?, v3 = ?, v4 = ?, v5 = ? WHERE v6 = ? AND v7 = ?')
-  t.equal(sql.oracle, 'TEST QUERY glue pieces FROM v1 = :1, v2 = :2, v3 = :3, v4 = :4, v5 = :5 WHERE v6 = :6 AND v7 = :7')
+  t.equal(sql.oracle.sql, 'TEST QUERY glue pieces FROM v1 = :1, v2 = :2, v3 = :3, v4 = :4, v5 = :5 WHERE v6 = :6 AND v7 = :7')
   t.deepEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
+  t.deepEqual(sql.oracle.binds, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
 })
 
@@ -133,8 +138,9 @@ test('SQL helper - build complex query with append passing simple strings and te
 
   t.equal(sql.text, 'TEST QUERY glue pieces FROM v1 = $1, v2 = $2, v3 = $3, v4 = $4, v5 = $5, v6 = v6 WHERE v6 = $6 AND v7 = $7 AND v8 = v8')
   t.equal(sql.sql, 'TEST QUERY glue pieces FROM v1 = ?, v2 = ?, v3 = ?, v4 = ?, v5 = ?, v6 = v6 WHERE v6 = ? AND v7 = ? AND v8 = v8')
-  t.equal(sql.oracle, 'TEST QUERY glue pieces FROM v1 = :1, v2 = :2, v3 = :3, v4 = :4, v5 = :5, v6 = v6 WHERE v6 = :6 AND v7 = :7 AND v8 = v8')
+  t.equal(sql.oracle.sql, 'TEST QUERY glue pieces FROM v1 = :1, v2 = :2, v3 = :3, v4 = :4, v5 = :5, v6 = v6 WHERE v6 = :6 AND v7 = :7 AND v8 = v8')
   t.deepEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
+  t.deepEqual(sql.oracle.binds, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
 })
 
@@ -160,9 +166,11 @@ test('SQL helper - build string using append with and without unsafe flag', (t) 
 
   t.equal(sql.text, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = $1,  AND v3 = whateverThisIs AND v4 = v4')
   t.equal(sql.sql, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = ?,  AND v3 = whateverThisIs AND v4 = v4')
-  t.equal(sql.oracle, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = :1,  AND v3 = whateverThisIs AND v4 = v4')
+  t.equal(sql.oracle.sql, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = :1,  AND v3 = whateverThisIs AND v4 = v4')
   t.equal(sql.values.length, 1)
   t.true(sql.values.includes(v2))
+  t.equal(sql.oracle.binds.length, 1)
+  t.true(sql.oracle.binds.includes(v2))
   t.end()
 })
 
@@ -173,17 +181,17 @@ test('SQL helper - build string using append and only unsafe', (t) => {
   const sql = SQL`TEST QUERY glue pieces FROM test WHERE test1 == test2`
   t.equal(sql.text, 'TEST QUERY glue pieces FROM test WHERE test1 == test2')
   t.equal(sql.sql, 'TEST QUERY glue pieces FROM test WHERE test1 == test2')
-  t.equal(sql.oracle, 'TEST QUERY glue pieces FROM test WHERE test1 == test2')
+  t.equal(sql.oracle.sql, 'TEST QUERY glue pieces FROM test WHERE test1 == test2')
 
   sql.append(SQL` AND v1 = v1,`, { unsafe: true })
   t.equal(sql.text, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1,')
   t.equal(sql.sql, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1,')
-  t.equal(sql.oracle, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1,')
+  t.equal(sql.oracle.sql, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1,')
 
   sql.append(SQL` AND v2 = ${v2} AND v3 = ${longName} AND v4 = 'v4'`, { unsafe: true })
   t.equal(sql.text, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = v2 AND v3 = whateverThisIs AND v4 = \'v4\'')
   t.equal(sql.sql, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = v2 AND v3 = whateverThisIs AND v4 = \'v4\'')
-  t.equal(sql.oracle, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = v2 AND v3 = whateverThisIs AND v4 = \'v4\'')
+  t.equal(sql.oracle.sql, 'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = v2 AND v3 = whateverThisIs AND v4 = \'v4\'')
 
   t.end()
 })

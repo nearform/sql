@@ -60,7 +60,7 @@ class SqlStatement {
   }
 
   get oracle () {
-    return this.generateString('oracle')
+    return { sql: this.generateString('oracle'), binds: this.values }
   }
 
   append (statement, options) {

@@ -43,7 +43,7 @@ mysql.query(sql) // execute query in mysql
 
 mysql2.query(sql) // execute query in mysql2
 
-oracle.query(sql) // execute query in oracle
+oracle.query(sql.oracle) // execute query in oracle
 ```
 
 ### Linting
@@ -95,8 +95,11 @@ const password = 'Password1'
 const sql = SQL`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})` // generate SQL query
 sql.text // INSERT INTO users (username, email, password) VALUES ($1 , $2 , $3) - for pg
 sql.sql // INSERT INTO users (username, email, password) VALUES (? , ? , ?) - for mysql and mysql2
-sql.oracle // INSERT INTO users (username, email, password) VALUES (:1 , :2 , :3) - for oracle
 sql.values // ['user, 'user@email.com', 'Password1']
+
+// for oracle
+sql.oracle.sql // INSERT INTO users (username, email, password) VALUES (:1 , :2 , :3)
+sql.oracle.binds // ['user, 'user@email.com', 'Password1']
 ```
 
 ## Testing, linting, & coverage
