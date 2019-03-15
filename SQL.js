@@ -1,3 +1,5 @@
+'use strict'
+
 class SqlStatement {
   constructor (strings, values) {
     this.strings = strings

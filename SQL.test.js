@@ -1,3 +1,5 @@
+'use strict'
+
 const test = require('tap').test
 
 const SQL = require('./SQL')
