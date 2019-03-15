@@ -83,6 +83,20 @@ sql.append(sql.glue(updates, ' , '))
 sql.append(SQL`WHERE id = ${userId}`)
 ```
 
+or also
+
+```js
+const ids = [1, 2, 3]
+const value = 'test'
+const sql = SQL` UPDATE users SET property = ${value}`
+
+const idsSqls = ids.map(id => SQL`${id}`)
+
+sql.append(SQL`WHERE id IN (`)
+sql.append(sql.glue(idsSqls, ' , '))
+sql.append(SQL`)`)
+```
+
 ## How it works?
 The SQL template string tag parses query and returns an objects that's understandable by [pg](https://www.npmjs.com/package/pg) library:
 ```js

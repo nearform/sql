@@ -55,6 +55,21 @@ test('SQL helper - build complex query with glue', (t) => {
   t.end()
 })
 
+test('SQL helper - build complex query with glue - regression #13', (t) => {
+  const name = 'Team 5'
+  const ids = [1, 2, 3].map(id => SQL`${id}`)
+
+  const sql = SQL`UPDATE teams SET name = ${name} `
+  sql.append(SQL`WHERE id IN (`)
+  sql.append(sql.glue(ids, ' , '))
+  sql.append(SQL`)`)
+
+  t.equal(sql.text, 'UPDATE teams SET name = $1 WHERE id IN ($2 , $3 , $4 )')
+  t.equal(sql.sql, 'UPDATE teams SET name = ? WHERE id IN (? , ? , ? )')
+  t.deepEqual(sql.values, [name, 1, 2, 3])
+  t.end()
+})
+
 test('SQL helper - build complex query with append and glue', (t) => {
   const updates = []
   const v1 = 'v1'
