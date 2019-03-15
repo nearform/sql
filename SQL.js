@@ -14,11 +14,15 @@ class SqlStatement {
       result.values = result.values.concat(pieces[i].values)
     }
 
+    if (result.strings.length === 0 && result.values.length > 0) {
+      result.strings = (new Array(result.values.length)).fill('')
+    }
+
     let strings = []
     for (let i = 0; i < result.strings.length; i++) {
       let value = result.strings[i]
 
-      if (i === 0 || value.trim() === '') {
+      if (i === 0) {
         strings.push(value)
         continue
       }
