@@ -36,6 +36,25 @@ test('SQL helper - multiline', (t) => {
   t.end()
 })
 
+test('SQL helper - multiline with emtpy lines', (t) => {
+  const name = 'Team 5'
+  const description = 'description'
+  const teamId = 7
+  const organizationId = 'WONKA'
+
+  const sql = SQL`
+    UPDATE teams SET name = ${name}, description = ${description}
+    WHERE id = ${teamId} AND org_id = ${organizationId}
+
+    RETURNING id
+  `
+
+  t.equal(sql.text, 'UPDATE teams SET name = $1, description = $2\nWHERE id = $3 AND org_id = $4\nRETURNING id')
+  t.equal(sql.sql, 'UPDATE teams SET name = ?, description = ?\nWHERE id = ? AND org_id = ?\nRETURNING id')
+  t.deepEqual(sql.values, [name, description, teamId, organizationId])
+  t.end()
+})
+
 test('SQL helper - build complex query with glue', (t) => {
   const name = 'Team 5'
   const description = 'description'

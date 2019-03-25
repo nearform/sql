@@ -52,7 +52,9 @@ class SqlStatement {
       text += delimiter + this.strings[i]
     }
 
-    return text.replace(/^\s+|\s+$/mg, '')
+    return text
+      .replace(/\s+$/mg, ' ')
+      .replace(/^\s+|\s+$/mg, '')
   }
 
   get text () {
