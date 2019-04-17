@@ -110,6 +110,12 @@ sql.sql // INSERT INTO users (username, email, password) VALUES (? , ? , ?) - fo
 sql.values // ['user, 'user@email.com', 'Password1']
 ```
 
+To help with debugging, you can also view an approximate representation of the SQL query with values filled in. It may differ from the actual SQL executed by your database, but serves as a handy reference when debugging. The debug output *should not* be executed as it is not guaranteed safe.
+
+```js
+sql.debug // INSERT INTO users (username, email, password) VALUES ('user','user@email.com','Password1')
+```
+
 ## Testing, linting, & coverage
 This module can be tested and reported on in a variety of ways...
 ```sh

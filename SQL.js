@@ -57,6 +57,20 @@ class SqlStatement {
       .replace(/^\s+|\s+$/mg, '')
   }
 
+  get debug () {
+    let text = this.strings[0]
+    let data
+    for (var i = 1; i < this.strings.length; i++) {
+      data = this.values[i - 1]
+      typeof data === 'string' ? text += "'" + data + "'" : text += data
+      text += this.strings[i]
+    }
+
+    return text
+      .replace(/\s+$/mg, ' ')
+      .replace(/^\s+|\s+$/mg, '')
+  }
+
   get text () {
     return this.generateString('pg')
   }
