@@ -1,4 +1,5 @@
 'use strict'
+const inspect = Symbol.for('nodejs.util.inspect.custom');
 
 class SqlStatement {
   constructor (strings, values) {
@@ -55,6 +56,24 @@ class SqlStatement {
     return text
       .replace(/\s+$/mg, ' ')
       .replace(/^\s+|\s+$/mg, '')
+  }
+
+  get debug () {
+    let text = this.strings[0]
+    let data
+    for (var i = 1; i < this.strings.length; i++) {
+      data = this.values[i - 1]
+      typeof data === 'string' ? text += "'" + data + "'" : text += data
+      text += this.strings[i]
+    }
+
+    return text
+      .replace(/\s+$/mg, ' ')
+      .replace(/^\s+|\s+$/mg, '')
+  }
+
+  [inspect]() {
+    return `SQL << ${this.debug} >>`
   }
 
   get text () {
