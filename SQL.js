@@ -1,5 +1,5 @@
 'use strict'
-const inspect = Symbol.for('nodejs.util.inspect.custom');
+const inspect = Symbol.for('nodejs.util.inspect.custom')
 
 class SqlStatement {
   constructor (strings, values) {
@@ -72,7 +72,7 @@ class SqlStatement {
       .replace(/^\s+|\s+$/mg, '')
   }
 
-  [inspect]() {
+  [inspect] () {
     return `SQL << ${this.debug} >>`
   }
 
