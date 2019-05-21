@@ -1,80 +1,93 @@
-defaults: &defaults
-  working_directory: ~/workspace
-  docker:
-    - image: circleci/node:latest
-      environment:
-      - PGHOST: 127.0.0.1
-      - PGUSER: root
-      - PGDB: sqlmap
-    - image: circleci/postgres:9.6.2-alpine
-      environment:
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+
+defaults:
+  - &working_directory ~/workspace
+  - &postgres
+    image: circleci/postgres:9.6.2-alpine
+    environment:
       - POSTGRES_USER: root
       - POSTGRES_DB: sqlmap
 
-version: 2
+postgres-env: &postgres-env
+  environment:
+    - PGHOST: 127.0.0.1
+    - PGUSER: root
+    - PGDB: sqlmap
+
+build-lint-test: &build-lint-test
+  - checkout
+
+  - run:
+      name: Version check
+      command: node -v
+
+  # https://discuss.circleci.com/t/sudo-command-not-found/14208/4
+  - run: apt-get update
+  - run: apt-get install -y sudo
+
+  - run:
+      name: install dockerize
+      command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+      environment:
+        DOCKERIZE_VERSION: v0.6.1
+  - run:
+      name: Wait for db
+      command: dockerize -wait tcp://127.0.0.1:5432 -timeout 1m
+  # Download and cache dependencies
+  - run: npm install
+  - persist_to_workspace:
+      root: ~/
+      paths:
+        - workspace
+
+  - run: 
+      name: Lint
+      command: npm run lint
+
+  - run:
+      name: Test
+      command: npm run test
+
+  - run: 
+      name: Coverage
+      command: npm run coverage
+
+  - run: 
+      name: Test Security
+      command: npm run test:security
+
 jobs:
-  build:
-    <<: *defaults
-    steps:
-      - checkout
-      - run:
-          name: install dockerize
-          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-          environment:
-            DOCKERIZE_VERSION: v0.6.1
-      - run:
-          name: Wait for db
-          command: dockerize -wait tcp://127.0.0.1:5432 -timeout 1m
-      # Download and cache dependencies
-      - run: npm install
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - workspace
+  node-v8:
+    working_directory: *working_directory
+    docker:
+      - image: node:8
+        <<: *postgres-env
+      - *postgres
+    steps: *build-lint-test
 
-  lint:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run: npm run lint
+  node-v10:
+    working_directory: *working_directory
+    docker:
+      - image: node:10
+        <<: *postgres-env
+      - *postgres
+    steps: *build-lint-test
 
-  test:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run: npm run test
-
-  coverage:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run: npm run coverage
-
-  test-security:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run: npm run test:security
+  node-v12:
+    working_directory: *working_directory
+    docker:
+      - image: node:12
+        <<: *postgres-env
+      - *postgres
+    steps: *build-lint-test
 
 workflows:
   version: 2
-  build-lint-test:
+  node-multi-build:
     jobs:
-      - build
-      - lint:
-          requires:
-            - build
-      - test:
-          requires:
-            - build
-      - test-security:
-          requires:
-            - build
-      - coverage:
-          requires:
-            - lint
-            - test
+      - node-v8
+      - node-v10
+      - node-v12
