@@ -124,5 +124,6 @@ class SqlStatement {
 function SQL (strings, ...values) {
   return new SqlStatement(strings, values)
 }
+SQL.glue = SqlStatement.prototype.glue
 
 module.exports = SQL

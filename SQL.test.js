@@ -101,7 +101,7 @@ test('SQL helper - build complex query with glue - regression #17', (t) => {
   const ids = [1, 2, 3].map(id => SQL`(${id})`)
 
   const sql = SQL`INSERT INTO users (id) VALUES `
-  sql.append(sql.glue(ids, ' , '))
+  sql.append(SQL.glue(ids, ' , '))
 
   t.equal(sql.text, 'INSERT INTO users (id) VALUES ($1) , ($2) , ($3)')
   t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?) , (?) , (?)')
