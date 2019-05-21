@@ -97,6 +97,13 @@ sql.append(sql.glue(idsSqls, ' , '))
 sql.append(SQL`)`)
 ```
 
+Glue can also be used statically:
+```js
+const ids = [1, 2, 3]
+const idsSqls = ids.map(id => SQL`(${id})`)
+SQL.glue(idsSqls, ' , ')
+```
+
 ## How it works?
 The SQL template string tag parses query and returns an objects that's understandable by [pg](https://www.npmjs.com/package/pg) library:
 ```js
