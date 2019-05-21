@@ -2,7 +2,7 @@
 
 Please take a second to read over this before opening an issue. Providing complete information upfront will help us address any issue (and ship new features!) faster.
 
-We greatly appreciate bug fixes, documentation improvements and new features, however when contributing a new major feature, it is a good idea to idea to first open an issue, to make sure the feature it fits with the goal of the project, so we don't waste your or our time.
+We greatly appreciate bug fixes, documentation improvements and new features. However, when contributing a new major feature, it is a good idea to first open an issue. This is to make sure that the feature fits with the goal of the project, so we don't waste your or our time.
 
 ## Bug Reports
 
@@ -12,11 +12,11 @@ A perfect bug report would have the following:
 2. Details on what versions of node you have (`node -v`).
 3. A simple repeatable test case for us to run. Please try to run through it 2-3 times to ensure it is completely repeatable.
 
-We would like to avoid issues that require a follow up questions to identify the bug. These follow ups are difficult to do unless we have a repeatable test case.
+We would like to avoid issues that require follow up questions to identify the bug. These follow ups are difficult to do unless we have a repeatable test case.
 
 ## For Developers
 
-All constributings should fit the [standard](https://github.com/standard/standard) linter, and pass the tests.
+All contributions should fit the [standard](https://github.com/standard/standard) linter, and pass the tests.
 You can test this by running:
 
 ```
