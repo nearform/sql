@@ -10,30 +10,29 @@ class SqlStatement {
   glue (pieces, separator) {
     const result = { strings: [], values: [] }
 
+    let carryover
     for (let i = 0; i < pieces.length; i++) {
-      let strings = pieces[i].strings.filter(s => !!s.trim())
+      let strings = Array.from(pieces[i].strings)
+      if (typeof carryover === 'string') {
+        strings[0] = carryover + separator + strings[0]
+        carryover = null
+      }
 
+      if (strings.length > pieces[i].values.length) {
+        carryover = strings.splice(-1)[0]
+      }
       result.strings = result.strings.concat(strings)
       result.values = result.values.concat(pieces[i].values)
     }
-
-    if (result.strings.length === 0 && result.values.length > 0) {
-      result.strings = (new Array(result.values.length)).fill('')
+    if (typeof carryover === 'string') {
+      result.strings.push(carryover)
     }
 
-    let strings = []
-    for (let i = 0; i < result.strings.length; i++) {
-      let value = result.strings[i]
-
-      if (i === 0) {
-        strings.push(value)
-        continue
-      }
-
-      strings.push(separator + value)
+    if (result.strings.length === result.values.length) {
+      result.strings.push('')
     }
 
-    result.strings = strings.concat([' '])
+    result.strings[result.strings.length - 1] += ' '
 
     return new SqlStatement(
       result.strings,
