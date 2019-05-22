@@ -110,6 +110,19 @@ test('SQL helper - build complex query with glue - regression #17', (t) => {
   t.end()
 })
 
+test('SQL helper - build complex query with static glue - regression #17', (t) => {
+  const ids = [1, 2, 3].map(id => SQL`(${id})`)
+
+  const sql = SQL`INSERT INTO users (id) VALUES `
+  sql.append(SQL.glue(ids, ' , '))
+
+  t.equal(sql.text, 'INSERT INTO users (id) VALUES ($1) , ($2) , ($3)')
+  t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?) , (?) , (?)')
+  t.equal(sql.debug, `INSERT INTO users (id) VALUES (1) , (2) , (3)`)
+  t.deepEqual(sql.values, [1, 2, 3])
+  t.end()
+})
+
 test('SQL helper - build complex query with append and glue', (t) => {
   const updates = []
   const v1 = 'v1'
