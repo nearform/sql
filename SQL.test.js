@@ -245,3 +245,21 @@ test('SQL helper - build string using append and only unsafe', (t) => {
 
   t.end()
 })
+
+test('SQL helper - handles js null values as valid `null` sql values', (t) => {
+  const name = null
+  const id = 123
+
+  const sql = SQL`UPDATE teams SET name = ${name} WHERE id = ${id}`
+
+  t.equal(sql.text, 'UPDATE teams SET name = $1 WHERE id = $2')
+  t.equal(sql.sql, 'UPDATE teams SET name = ? WHERE id = ?')
+  t.equal(sql.debug, `UPDATE teams SET name = null WHERE id = ${id}`)
+  t.deepEqual(sql.values, [name, id])
+  t.end()
+})
+
+test('SQL helper - Throws when building an sql string with an `undefined` value', (t) => {
+  t.throws(() => SQL`UPDATE teams SET name = ${undefined}`)
+  t.end()
+})

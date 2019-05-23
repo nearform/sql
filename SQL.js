@@ -1,8 +1,13 @@
 'use strict'
 const inspect = Symbol.for('nodejs.util.inspect.custom')
+const assert = require('assert')
 
 class SqlStatement {
   constructor (strings, values) {
+    assert(
+      values.every(value => value !== undefined),
+      'SQL`...` strings cannot take `undefined` as values as this can generate invalid sql.'
+    )
     this.strings = strings
     this.values = values
   }
