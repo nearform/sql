@@ -115,7 +115,7 @@ const users = [
 
 const sql = SQL`INSERT INTO users (id, name) VALUES `;
 
-sql.append(SQL.glue(users.map(user => SQL`(${user.id},${user.name}})`), ','));
+sql.append(SQL.glue(users.map(user => SQL`(${user.id},${user.name}})`), ' , '));
 ```
 
 ## How it works?

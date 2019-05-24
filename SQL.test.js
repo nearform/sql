@@ -259,7 +259,7 @@ test('SQL helper - handles js null values as valid `null` sql values', (t) => {
   t.end()
 })
 
-test('SQL helper - Throws when building an sql string with an `undefined` value', (t) => {
+test('SQL helper - throws when building an sql string with an `undefined` value', (t) => {
   t.throws(() => SQL`UPDATE teams SET name = ${undefined}`)
   t.end()
 })
