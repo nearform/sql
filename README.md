@@ -12,9 +12,10 @@ A simple SQL injection protection module that allows you to use ES6 template str
     1. [append](#appendstatement)
     2. [glue](#gluepieces-separator)
 4. [How it works?](#how-it-works)
-5. [Testing, linting, & coverage](#testing-linting--coverage)
-6. [Benchmark](#benchmark)
-7. [License](#license)
+5. [Undefined values and nullable fields](#undefined-values-and-nullable-fields)
+6. [Testing, linting, & coverage](#testing-linting--coverage)
+7. [Benchmark](#benchmark)
+8. [License](#license)
 
 ## Install
 
@@ -104,6 +105,19 @@ const idsSqls = ids.map(id => SQL`(${id})`)
 SQL.glue(idsSqls, ' , ')
 ```
 
+Glue can also be used to generate batch operations:
+```js
+const users = [
+  {id: 1, name: 'something'},
+  {id: 2, name: 'something-else'},
+  {id: 3, name: 'something-other'}
+]
+
+const sql = SQL`INSERT INTO users (id, name) VALUES `
+
+sql.append(SQL.glue(users.map(user => SQL`(${user.id},${user.name}})`), ' , '))
+```
+
 ## How it works?
 The SQL template string tag parses query and returns an objects that's understandable by [pg](https://www.npmjs.com/package/pg) library:
 ```js
@@ -124,6 +138,20 @@ sql.debug // INSERT INTO users (username, email, password) VALUES ('user','user@
 
 console.log(sql) // SQL << INSERT INTO users (username, email, password) VALUES ('user','user@email.com','Password1') >> 
 
+```
+
+## Undefined values and nullable fields
+
+Don't pass undefined values into the sql query string builder. It throws on undefined values as this is a javascript concept and sql does not handle it.
+
+Sometimes you may expect to not have a value to be provided to the string builder, and this is ok as the coresponding field is nullable. In this or similar cases the recommended way to handle this is to coerce it to a null js value.
+
+Example:
+```js
+const user = { name: 'foo bar' }
+
+const sql = SQL`INSERT into users (name, address) VALUES (${user.name},${user.address || null})`
+sql.debug // INSERT INTO users (name, address) VALUES ('foo bar',null)
 ```
 
 ## Testing, linting, & coverage
