@@ -111,11 +111,11 @@ const users = [
   {id: 1, name: 'something'},
   {id: 2, name: 'something-else'},
   {id: 3, name: 'something-other'}
-];
+]
 
-const sql = SQL`INSERT INTO users (id, name) VALUES `;
+const sql = SQL`INSERT INTO users (id, name) VALUES `
 
-sql.append(SQL.glue(users.map(user => SQL`(${user.id},${user.name}})`), ' , '));
+sql.append(SQL.glue(users.map(user => SQL`(${user.id},${user.name}})`), ' , '))
 ```
 
 ## How it works?
