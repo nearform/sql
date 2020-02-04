@@ -6,6 +6,7 @@
   "types": "./SQL.d.ts",
   "scripts": {
     "test": "tap *.test.js",
+    "posttest": "tsd",
     "test:security": "node ./sqlmap/sqlmap.js",
     "test:typescript": "tsd",
     "pretest:security": "napa sqlmapproject/sqlmap && node ./sqlmap/db-init.js",
