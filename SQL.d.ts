@@ -24,6 +24,12 @@ export class SqlStatement implements StatementLike {
    * Safely glues multiple SQL statements together
    * @param pieces the statements to be glued
    * @param separator the glue separator placed between each statement
+   * @example
+   * const sql = SQL`SELECT id FROM customers WHERE `
+   * sql.glue([
+   *   sql,
+   *   SQL`email = ${email}`
+   * ])
    */
   glue (pieces: StatementLike[], separator: string): SqlStatement
 
@@ -31,6 +37,12 @@ export class SqlStatement implements StatementLike {
    * Safely glues multiple SQL statements together
    * @param pieces the statements to be glued
    * @param separator the glue separator placed between each statement
+   * @example
+   * SQL.glue([
+   *   SQL`SELECT id FROM customers WHERE `,
+   *   SQL`email = ${email}`
+   * ])
+   * )
    */
   static glue (pieces: StatementLike[], separator: string): SqlStatement
 
@@ -53,6 +65,10 @@ export class SqlStatement implements StatementLike {
    * Appends another statement onto this statement
    * @param statement a statement to be appended onto this existing statement
    * @param options allows disabling the safe template escaping while appending
+   * @example
+   * SQL`UPDATE users SET name = ${username}, email = ${email} `
+   *   .append(SQL`SET ${dynamicName} = '2'`, { unsafe: true })
+   *   .append(SQL`WHERE id = ${userId}`)
    */
   append (statement: StatementLike, options?: StatementOptions): SqlStatement
 }
