@@ -33,7 +33,7 @@
     "sql-template-strings": "^2.2.2",
     "standard": "^12.0.1",
     "tap": "^12.6.2",
-    "tsd": "^0.9.0"
+    "tsd": "^0.11.0"
   },
   "standard": {
     "ignore": [
