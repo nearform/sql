@@ -1,5 +1,5 @@
 /** A tagged template containing strings and values */
-export interface StatementLike {
+interface StatementLike {
   strings: string[]
   values: any[]
 }
@@ -8,11 +8,12 @@ interface StatementOptions {
   unsafe?: boolean
 }
 
+
 /**
  * An SQL statement tagged template
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
  */
-export class SqlStatement implements StatementLike {
+declare class SqlStatement implements StatementLike {
   constructor (strings: string[], values: any[])
 
   /** The string components of this tagged template */
@@ -73,6 +74,23 @@ export class SqlStatement implements StatementLike {
   append (statement: StatementLike, options?: StatementOptions): SqlStatement
 }
 
+declare namespace SQL {
+  export { SqlStatement }
+
+  /**
+   * Safely glues multiple SQL statements together
+   * @param pieces the statements to be glued
+   * @param separator the glue separator placed between each statement
+   * @example
+   * SQL.glue([
+   *   SQL`SELECT id FROM customers WHERE `,
+   *   SQL`email = ${email}`
+   * ])
+   * )
+   */
+  export function glue (pieces: StatementLike[], separator: string): SqlStatement
+}
+
 /**
  * Create an SQL statement tagged template
  * @param strings template literal string components
@@ -80,5 +98,6 @@ export class SqlStatement implements StatementLike {
  * @example
  * SQL`SELECT id FROM customers WHERE name = ${userInput}`
  */
-export function SQL (strings: any, ...values: any[]): SqlStatement
-export default SQL
+declare function SQL (strings: any, ...values: any[]): SqlStatement
+
+export = SQL
