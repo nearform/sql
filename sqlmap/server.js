@@ -4,10 +4,11 @@ const users = require('./users')
 
 server.register([users])
   .then(() => server.start())
-  .then(
-    () => logMessage('Server started on: http://localhost:8080'),
-    (err) => logMessage(`Failed to start server: ${err.message}`)
-  )
+  .then(() => logMessage('Server started on: http://localhost:8080'))
+  .catch((err) => {
+    logMessage(`Failed to start server: ${err.message}`)
+    process.exit(1)
+  })
 
 // if forked as child, send output message via ipc to parent
 // otherwise output to console
