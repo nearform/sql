@@ -15,10 +15,9 @@ module.exports = {
           const { limit = 10, page = 1 } = request.query
 
           return client.query(SQL`SELECT * FROM users LIMIT ${limit} OFFSET ${limit * (page - 1)}`)
-            .then((users) => {
-              const response = h.response(users)
-              response.code(201)
-              return response
+            .then((result) => {
+              const users = result.rows
+              return h.response(users)
             })
         }
       })
@@ -30,10 +29,9 @@ module.exports = {
           const { username, password, email } = request.payload
 
           return client.query(SQL`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})`)
-            .then((user) => {
-              const response = h.response(user)
-              response.code(201)
-              return response
+            .then((result) => {
+              if (result.command !== 'INSERT' || result.rowCount !== 1) return new Error('User was not inserted')
+              return h.response().code(201)
             })
         }
       })

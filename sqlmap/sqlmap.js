@@ -99,14 +99,20 @@ hapi.on('close', (code) => {
   process.exit(1)
 })
 
+hapi.stdout.on('data', (data) => {
+  console.log(`${hapiChalk} ${data}`)
+})
+
+hapi.stderr.on('data', (data) => {
+  console.log(`${hapiChalk} ${chalk.red(data)}`)
+})
+
 async.detect(['python2', 'python'], findPython2, function (err, python) {
   if (err) {
     return console.error(chalk.red(err))
   }
 
   hapi.stdout.once('data', (data) => {
-    console.log(`${hapiChalk} ${data}`)
-
     async.everySeries(endpoints.urls, (urlDescription, done) => {
       executeMap(python, endpoints, urlDescription, (err, vulnerabilities) => {
         if (err) {
@@ -133,9 +139,5 @@ async.detect(['python2', 'python'], findPython2, function (err, python) {
         return process.exit(1)
       }
     })
-  })
-
-  hapi.stderr.on('data', (data) => {
-    console.log(`\n${hapiChalk} ${chalk.red(`stderr: ${data}`)}`)
   })
 })
