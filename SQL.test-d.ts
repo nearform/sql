@@ -1,5 +1,5 @@
-import * as SQL from './sql'
-import { glue, SqlStatement } from './sql'
+import * as SQL from '.'
+import { glue, SqlStatement } from '.'
 import { expectType, expectError } from 'tsd'
 
 expectType<SqlStatement>(SQL`SELECT 1`)

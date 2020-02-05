@@ -13,7 +13,7 @@
     {
       "url": "http://localhost:8080/users",
       "method": "POST",
-      "headers": "Content-Type: application/json",
+      "headers": "Content-Type:application/json",
       "params": "username,password,email",
       "data": "{\"username\":\"user\",\"password\":\"12345\",\"email\":\"user@email.com\"}"
     }

@@ -3,6 +3,8 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 
+version: 2
+
 defaults:
   - &working_directory ~/workspace
   - &postgres
@@ -25,25 +27,28 @@ build-lint-test: &build-lint-test
       command: node -v
 
   # https://discuss.circleci.com/t/sudo-command-not-found/14208/4
-  - run: apt-get update
-  - run: apt-get install -y sudo
+  - run:
+      name: Install sudo
+      command: apt-get update && apt-get install -y sudo
 
   - run:
-      name: install dockerize
-      command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+      name: Install dockerize
+      command: >
+        wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz &&
+        sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz &&
+        rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
       environment:
         DOCKERIZE_VERSION: v0.6.1
-  - run:
-      name: Wait for db
-      command: dockerize -wait tcp://127.0.0.1:5432 -timeout 1m
-  # Download and cache dependencies
-  - run: npm install
-  - persist_to_workspace:
-      root: ~/
-      paths:
-        - workspace
 
-  - run: 
+  - run:
+      name: Wait for PostgreSQL to be ready
+      command: dockerize -wait tcp://127.0.0.1:5432 -timeout 1m
+
+  - run:
+      name: Install npm dependencies
+      command: npm install
+
+  - run:
       name: Lint
       command: npm run lint
 
@@ -51,11 +56,11 @@ build-lint-test: &build-lint-test
       name: Test
       command: npm run test
 
-  - run: 
+  - run:
       name: Coverage
       command: npm run coverage
 
-  - run: 
+  - run:
       name: Test Security
       command: npm run test:security
 
