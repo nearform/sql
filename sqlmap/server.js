@@ -1,23 +1,13 @@
-const Hapi = require('hapi')
-const server = new Hapi.Server()
+const Hapi = require('@hapi/hapi')
+const server = Hapi.Server({ port: 8080 })
+const users = require('./users')
 
-server.connection({
-  port: 8080,
-  host: 'localhost'
-})
-
-server.register([
-  {
-    register: require('./users')
-  }
-])
-
-server.start((err) => {
-  if (err) {
-    return logMessage(`Failed to start server: ${err.message}`)
-  }
-  logMessage('Server started on: http://localhost:8080')
-})
+server.register([users])
+  .then(() => server.start())
+  .then(
+    () => logMessage('Server started on: http://localhost:8080'),
+    (err) => logMessage(`Failed to start server: ${err.message}`)
+  )
 
 // if forked as child, send output message via ipc to parent
 // otherwise output to console

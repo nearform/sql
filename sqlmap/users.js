@@ -2,45 +2,41 @@ const { Client } = require('pg')
 const SQL = require('../SQL')
 const config = require('./config')
 
-const client = new Client(config)
-client.connect()
+module.exports = {
+  name: 'users',
+  version: '1.0.0',
+  register: function (server) {
+    const client = new Client(config)
+    return client.connect().then(() => {
+      server.route({
+        method: 'GET',
+        path: '/users',
+        handler: function (request, h) {
+          const { limit = 10, page = 1 } = request.query
 
-exports.register = function (server, options, next) {
-  server.route({
-    method: 'GET',
-    path: '/users',
-    handler: function (request, reply) {
-      const { limit = 10, page = 1 } = request.query
-
-      client.query(SQL`SELECT * FROM users LIMIT ${limit} OFFSET ${limit * (page - 1)}`, (err, users) => {
-        if (err) {
-          return reply(err)
+          return client.query(SQL`SELECT * FROM users LIMIT ${limit} OFFSET ${limit * (page - 1)}`)
+            .then((users) => {
+              const response = h.response(users)
+              response.code(201)
+              return response
+            })
         }
-
-        return reply(users).code(201)
       })
-    }
-  })
 
-  server.route({
-    method: 'POST',
-    path: '/users',
-    handler: function (request, reply) {
-      const { username, password, email } = request.payload
+      server.route({
+        method: 'POST',
+        path: '/users',
+        handler: function (request, h) {
+          const { username, password, email } = request.payload
 
-      client.query(SQL`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})`, (err, user) => {
-        if (err) {
-          return reply(err)
+          return client.query(SQL`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})`)
+            .then((user) => {
+              const response = h.response(user)
+              response.code(201)
+              return response
+            })
         }
-
-        return reply(user).code(201)
       })
-    }
-  })
-
-  next()
-}
-
-exports.register.attributes = {
-  name: 'users'
+    })
+  }
 }

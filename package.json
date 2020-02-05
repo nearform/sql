@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/nearform/sql#readme",
   "devDependencies": {
+    "@hapi/hapi": "^18.4.0",
     "async": "^2.6.2",
     "benchmark": "^2.1.4",
     "hapi": "^18.1.0",
