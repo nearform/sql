@@ -13,7 +13,7 @@ if (!endpoints) {
   process.exit(1)
 }
 
-function findPython2 (pythonCommand, done) {
+const findPython2 = (pythonCommand, done) => {
   return exec(`${pythonCommand} --version`, function (err, stdout, stderr) {
     if (err) {
       return done(err)
@@ -29,7 +29,7 @@ function findPython2 (pythonCommand, done) {
 
 const sqlmapChalk = chalk.blue('sqlmap')
 
-function executeMap (command, config, urlDescription, done) {
+const executeMap = (command, config, urlDescription, done) => {
   console.log('⏳  Python command that will be used:', command)
 
   const params = [
@@ -40,7 +40,8 @@ function executeMap (command, config, urlDescription, done) {
     `--risk=${config.risk}`,
     `--dbms=${config.dbms}`,
     `--timeout=${config.timeout}`,
-    `-v`, `${config.verbose}`,
+    `-v`,
+    `${config.verbose}`,
     `--flush-session`,
     `--batch`
   ]
@@ -57,12 +58,18 @@ function executeMap (command, config, urlDescription, done) {
     params.push(`--data=${urlDescription.data}`)
   }
 
-  console.log(chalk.green('⏳  executing sqlmap with: ', (['' + command].concat(params)).join(' ')))
+  console.log(
+    chalk.green(
+      '⏳  executing sqlmap with: ',
+      ['' + command].concat(params).join(' ')
+    )
+  )
 
   const sql = spawn(command, params)
+  sql.stdin.end()
   let vulnerabilities = false
 
-  sql.stdout.on('data', (data) => {
+  sql.stdout.on('data', data => {
     if (data.length > 1) {
       console.log(`${sqlmapChalk} ${data}`)
     }
@@ -71,16 +78,16 @@ function executeMap (command, config, urlDescription, done) {
     }
   })
 
-  sql.stderr.on('data', (data) => {
+  sql.stderr.on('data', data => {
     done(data)
   })
 
-  sql.on('error', (error) => {
+  sql.on('error', error => {
     console.log(`${sqlmapChalk} ${chalk.red(`⚠️  ${error}`)}`)
     done(new Error('failed to start child process'))
   })
 
-  sql.on('close', (code) => {
+  sql.on('close', code => {
     if (code !== 0) {
       console.log(`${sqlmapChalk} ${chalk.red(`⚠️  exited with code ${code}`)}`)
       return process.exit(1)
@@ -89,22 +96,24 @@ function executeMap (command, config, urlDescription, done) {
   })
 }
 
-const hapiChalk = chalk.yellow('hapi')
+const fastifyChalk = chalk.yellow('fastify')
 
-const hapi = spawn('node', ['sqlmap/server.js'])
+const fastify = spawn('node', ['sqlmap/server.js'])
 
-hapi.on('close', (code) => {
+fastify.on('close', code => {
   if (code === 0) return
-  console.log(`\n${hapiChalk} ${chalk.red(`⚠️  server exited with code ${code}`)}`)
+  console.log(
+    `\n${fastifyChalk} ${chalk.red(`⚠️  server exited with code ${code}`)}`
+  )
   process.exit(1)
 })
 
-hapi.stdout.on('data', (data) => {
-  console.log(`${hapiChalk} ${data}`)
+fastify.stdout.on('data', data => {
+  console.log(`${fastifyChalk} ${data}`)
 })
 
-hapi.stderr.on('data', (data) => {
-  console.log(`${hapiChalk} ${chalk.red(data)}`)
+fastify.stderr.on('data', data => {
+  console.log(`${fastifyChalk} ${chalk.red(data)}`)
 })
 
 async.detect(['python2', 'python'], findPython2, function (err, python) {
@@ -112,32 +121,49 @@ async.detect(['python2', 'python'], findPython2, function (err, python) {
     return console.error(chalk.red(err))
   }
 
-  hapi.stdout.once('data', (data) => {
-    async.everySeries(endpoints.urls, (urlDescription, done) => {
-      executeMap(python, endpoints, urlDescription, (err, vulnerabilities) => {
+  fastify.stdout.once('data', data => {
+    async.everySeries(
+      endpoints.urls,
+      (urlDescription, done) => {
+        executeMap(
+          python,
+          endpoints,
+          urlDescription,
+          (err, vulnerabilities) => {
+            if (err) {
+              console.error(chalk.red(err))
+              return done(err, false)
+            }
+
+            done(null, !vulnerabilities)
+          }
+        )
+      },
+      (err, result) => {
         if (err) {
           console.error(chalk.red(err))
-          return done(err, false)
+          return process.exit(1)
         }
 
-        done(null, !vulnerabilities)
-      })
-    }, (err, result) => {
-      if (err) {
-        console.error(chalk.red(err))
-        return process.exit(1)
+        console.log('\n\n')
+        fastify.kill()
+        if (result) {
+          console.log(
+            `\n${sqlmapChalk} ${chalk.green(
+              '✅  no injection vulnerabilities found\n\n'
+            )}`
+          )
+          console.log()
+          return process.exit(0)
+        } else {
+          console.log(
+            `\n${sqlmapChalk} ${chalk.red(
+              '⚠️  FOUND injection vulnerabilities\n\n'
+            )}`
+          )
+          return process.exit(1)
+        }
       }
-
-      console.log('\n\n')
-      hapi.kill()
-      if (result) {
-        console.log(`\n${sqlmapChalk} ${chalk.green('✅  no injection vulnerabilities found\n\n')}`)
-        console.log()
-        return process.exit(0)
-      } else {
-        console.log(`\n${sqlmapChalk} ${chalk.red('⚠️  FOUND injection vulnerabilities\n\n')}`)
-        return process.exit(1)
-      }
-    })
+    )
   })
 })

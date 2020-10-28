@@ -1,21 +1,22 @@
-const Hapi = require('@hapi/hapi')
-const server = Hapi.Server({ port: 8080 })
 const users = require('./users')
 
-server.register([users])
-  .then(() => server.start())
-  .then(() => logMessage('Server started on: http://localhost:8080'))
-  .catch((err) => {
-    logMessage(`Failed to start server: ${err.message}`)
-    process.exit(1)
-  })
+const fastify = require('fastify')({
+  logger: false
+})
 
-// if forked as child, send output message via ipc to parent
-// otherwise output to console
-function logMessage (message) {
-  if (!process.send) {
-    console.log(message)
-  } else {
-    process.send(message)
+fastify.register(require('fastify-postgres'), require('./config'))
+fastify.register(users)
+
+const start = async () => {
+  try {
+    await fastify.listen(8080)
+    // it's important to write to stdout as the sqlmap script relies on
+    // a message from the server to be printed on stdout to start the checks
+    console.log('Server started')
+  } catch (err) {
+    fastify.log.error(err)
+    process.exit(1)
   }
 }
+
+start()
