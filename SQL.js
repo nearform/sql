@@ -24,8 +24,8 @@ class SqlStatement {
       if (strings.length > pieces[i].values.length) {
         carryover = strings.splice(-1)[0]
       }
-      result.strings = result.strings.concat(strings)
-      result.values = result.values.concat(pieces[i].values)
+      result.strings.push.apply(result.strings, strings)
+      result.values.push.apply(result.values, pieces[i].values)
     }
     if (typeof carryover === 'string') {
       result.strings.push(carryover)
