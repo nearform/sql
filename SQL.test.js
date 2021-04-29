@@ -4,6 +4,7 @@ const util = require('util')
 const test = require('tap').test
 
 const SQL = require('./SQL')
+const unsafe = SQL.unsafe
 
 test('SQL helper - build complex query with append', t => {
   const name = 'Team 5'
@@ -194,7 +195,7 @@ test('SQL helper - build complex query with append and glue', t => {
   )
   t.equal(
     sql.debug,
-    'TEST QUERY glue pieces FROM v1 = \'v1\' , v2 = \'v2\' , v3 = \'v3\' , v4 = \'v4\' , v5 = \'v5\' WHERE v6 = \'v6\' AND v7 = \'v7\''
+    "TEST QUERY glue pieces FROM v1 = 'v1' , v2 = 'v2' , v3 = 'v3' , v4 = 'v4' , v5 = 'v5' WHERE v6 = 'v6' AND v7 = 'v7'"
   )
   t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
@@ -228,7 +229,7 @@ test('SQL helper - build complex query with append', t => {
   )
   t.equal(
     sql.debug,
-    'TEST QUERY glue pieces FROM v1 = \'v1\', v2 = \'v2\', v3 = \'v3\', v4 = \'v4\', v5 = \'v5\' WHERE v6 = \'v6\' AND v7 = \'v7\''
+    "TEST QUERY glue pieces FROM v1 = 'v1', v2 = 'v2', v3 = 'v3', v4 = 'v4', v5 = 'v5' WHERE v6 = 'v6' AND v7 = 'v7'"
   )
   t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
@@ -260,7 +261,7 @@ test('SQL helper - build complex query with append passing simple strings and te
   )
   t.equal(
     sql.debug,
-    'TEST QUERY glue pieces FROM v1 = \'v1\', v2 = \'v2\', v3 = \'v3\', v4 = \'v4\', v5 = \'v5\', v6 = v6 WHERE v6 = \'v6\' AND v7 = \'v7\' AND v8 = v8'
+    "TEST QUERY glue pieces FROM v1 = 'v1', v2 = 'v2', v3 = 'v3', v4 = 'v4', v5 = 'v5', v6 = v6 WHERE v6 = 'v6' AND v7 = 'v7' AND v8 = v8"
   )
   t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
@@ -295,7 +296,7 @@ test('SQL helper - build string using append with and without unsafe flag', t =>
   )
   t.equal(
     sql.debug,
-    'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = \'v2\',  AND v3 = whateverThisIs AND v4 = v4'
+    "TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = 'v2',  AND v3 = whateverThisIs AND v4 = v4"
   )
   t.equal(sql.values.length, 1)
   t.ok(sql.values.includes(v2))
@@ -324,7 +325,7 @@ test('SQL helper - build string using append and only unsafe', t => {
   )
   t.equal(
     sql.debug,
-    'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = v2 AND v3 = whateverThisIs AND v4 = \'v4\''
+    "TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = v2 AND v3 = whateverThisIs AND v4 = 'v4'"
   )
 
   t.end()
@@ -353,7 +354,7 @@ test('empty append', t => {
 
   t.equal(sql.text, 'UPDATE teams SET name = $1')
   t.equal(sql.sql, 'UPDATE teams SET name = ?')
-  t.equal(sql.debug, 'UPDATE teams SET name = \'team\'')
+  t.equal(sql.debug, "UPDATE teams SET name = 'team'")
   t.same(sql.values, ['team'])
 
   t.end()
@@ -362,6 +363,20 @@ test('empty append', t => {
 test('inspect', t => {
   const sql = SQL`UPDATE teams SET name = ${'team'}`
 
-  t.equal(util.inspect(sql), 'SQL << UPDATE teams SET name = \'team\' >>')
+  t.equal(util.inspect(sql), "SQL << UPDATE teams SET name = 'team' >>")
+  t.end()
+})
+
+test('unsafe', t => {
+  const table = 'teams'
+  const name = 'name'
+  const id = 123
+
+  const sql = SQL`UPDATE ${unsafe(table)} SET name = ${name} WHERE id = ${id}`
+
+  t.equal(sql.text, 'UPDATE "teams" SET name = $1 WHERE id = $2')
+  t.equal(sql.sql, 'UPDATE "teams" SET name = ? WHERE id = ?')
+  t.equal(sql.debug, `UPDATE "teams" SET name = 'name' WHERE id = ${id}`)
+  t.same(sql.values, [name, id])
   t.end()
 })

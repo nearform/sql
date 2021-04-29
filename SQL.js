@@ -1,5 +1,6 @@
 'use strict'
 const inspect = Symbol.for('nodejs.util.inspect.custom')
+const unsafe = Symbol.for('unsafe')
 
 class SqlStatement {
   constructor (strings, values) {
@@ -9,7 +10,7 @@ class SqlStatement {
       )
     }
     this.strings = strings
-    this.values = values
+    this._values = values
   }
 
   glue (pieces, separator) {
@@ -44,14 +45,22 @@ class SqlStatement {
 
   generateString (type) {
     let text = this.strings[0]
+    let valueOffset = 0
+    const values = [...this._values]
 
     for (let i = 1; i < this.strings.length; i++) {
-      let delimiter = '?'
-      if (type === 'pg') {
-        delimiter = '$' + i
-      }
+      if (values[i - 1 + valueOffset] && values[i - 1 + valueOffset][unsafe]) {
+        text += `"${values[i - 1 + valueOffset].value}"${this.strings[i]}`
+        values.splice(i - 1 + valueOffset, 1)
+        valueOffset--
+      } else {
+        let delimiter = '?'
+        if (type === 'pg') {
+          delimiter = '$' + (i + valueOffset)
+        }
 
-      text += delimiter + this.strings[i]
+        text += delimiter + this.strings[i]
+      }
     }
 
     return text.replace(/\s+$/gm, ' ').replace(/^\s+|\s+$/gm, '')
@@ -60,9 +69,15 @@ class SqlStatement {
   get debug () {
     let text = this.strings[0]
     let data
+
     for (let i = 1; i < this.strings.length; i++) {
-      data = this.values[i - 1]
-      typeof data === 'string' ? (text += "'" + data + "'") : (text += data)
+      data = this._values[i - 1]
+      let quote = "'"
+      if (data && data[unsafe]) {
+        data = data.value
+        quote = '"'
+      }
+      typeof data === 'string' ? (text += quote + data + quote) : (text += data)
       text += this.strings[i]
     }
 
@@ -79,6 +94,10 @@ class SqlStatement {
 
   get sql () {
     return this.generateString('mysql')
+  }
+
+  get values () {
+    return this._values.filter(v => !v || !v[unsafe])
   }
 
   append (statement, options) {
@@ -111,7 +130,7 @@ class SqlStatement {
 
     this.strings = [...this.strings.slice(0, -1), last + first, ...rest]
 
-    this.values.push.apply(this.values, statement.values)
+    this._values.push.apply(this._values, statement.values)
 
     return this
   }
@@ -126,3 +145,7 @@ SQL.glue = SqlStatement.prototype.glue
 module.exports = SQL
 module.exports.SQL = SQL
 module.exports.default = SQL
+module.exports.unsafe = value => ({
+  value,
+  [unsafe]: true
+})

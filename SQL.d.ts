@@ -8,18 +8,15 @@ interface StatementOptions {
   unsafe?: boolean
 }
 
-
 /**
  * An SQL statement tagged template
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
  */
 declare class SqlStatement implements StatementLike {
-  constructor (strings: string[], values: any[])
+  constructor(strings: string[], values: any[])
 
   /** The string components of this tagged template */
   strings: string[]
-  /** The value components of this tagged template */
-  values: any[]
 
   /**
    * Safely glues multiple SQL statements together
@@ -32,7 +29,7 @@ declare class SqlStatement implements StatementLike {
    *   SQL`email = ${email}`
    * ])
    */
-  glue (pieces: StatementLike[], separator: string): SqlStatement
+  glue(pieces: StatementLike[], separator: string): SqlStatement
 
   /**
    * Safely glues multiple SQL statements together
@@ -45,22 +42,25 @@ declare class SqlStatement implements StatementLike {
    * ])
    * )
    */
-  static glue (pieces: StatementLike[], separator: string): SqlStatement
+  static glue(pieces: StatementLike[], separator: string): SqlStatement
 
   /**
    * Generates a PostgreSQL or MySQL statement string from this statement's strings and values
    * @param type the type of statement string to be generated
    */
-  generateString (type?: 'pg' | 'mysql'): string
+  generateString(type?: 'pg' | 'mysql'): string
 
   /** Returns a formatted but unsafe statement of strings and values, useful for debugging */
-  get debug (): string
+  get debug(): string
 
   /** Returns a formatted statement suitable for use in PostgreSQL */
-  get text (): string
+  get text(): string
 
   /** Returns a formatted statement suitable for use in MySQL */
-  get sql (): string
+  get sql(): string
+
+  /** The value components of this tagged template */
+  get values(): any[]
 
   /**
    * Appends another statement onto this statement
@@ -71,7 +71,7 @@ declare class SqlStatement implements StatementLike {
    *   .append(SQL`SET ${dynamicName} = '2'`, { unsafe: true })
    *   .append(SQL`WHERE id = ${userId}`)
    */
-  append (statement: StatementLike, options?: StatementOptions): SqlStatement
+  append(statement: StatementLike, options?: StatementOptions): SqlStatement
 }
 
 declare namespace SQL {
@@ -88,7 +88,9 @@ declare namespace SQL {
    * ])
    * )
    */
-  export function glue (pieces: StatementLike[], separator: string): SqlStatement
+  export function glue(pieces: StatementLike[], separator: string): SqlStatement
+
+  export function unsafe<T>(value: T): { value: T }
 }
 
 /**
@@ -98,6 +100,6 @@ declare namespace SQL {
  * @example
  * SQL`SELECT id FROM customers WHERE name = ${userInput}`
  */
-declare function SQL (strings: any, ...values: any[]): SqlStatement
+declare function SQL(strings: any, ...values: any[]): SqlStatement
 
 export = SQL
