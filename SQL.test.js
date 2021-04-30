@@ -380,3 +380,57 @@ test('unsafe', t => {
   t.same(sql.values, [name, id])
   t.end()
 })
+
+test('unsafe + append (1)', t => {
+  const table = 'teams'
+  const name = 'name'
+  const id = 123
+
+  const reusableSql = SQL`SELECT id FROM ${unsafe(table)} WHERE id = ${id}`
+  const sql = SQL`SELECT * FROM ${unsafe(table)} INNER JOIN (${reusableSql}) as t2 ON t2.id = id`
+
+  t.equal(sql.text, 'SELECT * FROM "teams" INNER JOIN (SELECT id FROM "teams" WHERE id = $1) as t2 ON t2.id = id')
+  t.equal(sql.sql, 'SELECT * FROM "teams" INNER JOIN (SELECT id FROM "teams" WHERE id = ?) as t2 ON t2.id = id')
+  t.equal(sql.debug, `SELECT * FROM "teams" INNER JOIN (SELECT id FROM "teams" WHERE id = ${id}) as t2 ON t2.id = id`)
+  t.same(sql.values, [name, id])
+  t.end()
+})
+
+test('unsafe + append (2)', t => {
+  const table = 'teams'
+  const name = 'name'
+  const id = 123
+
+  const reusableSql = SQL`SELECT id FROM ${unsafe(table)} WHERE id = ${id}`
+
+  const sql = SQL`SELECT * FROM ${unsafe(table)} INNER JOIN (`
+  sql.append(reusableSql)
+  sql.append(SQL` as t2 ON t2.id = id`)
+
+  t.equal(sql.text, 'SELECT * FROM "teams" INNER JOIN (SELECT id FROM "teams" WHERE id = $1) as t2 ON t2.id = id')
+  t.equal(sql.sql, 'SELECT * FROM "teams" INNER JOIN (SELECT id FROM "teams" WHERE id = ?) as t2 ON t2.id = id')
+  t.equal(sql.debug, `SELECT * FROM "teams" INNER JOIN (SELECT id FROM "teams" WHERE id = ${id}) as t2 ON t2.id = id`)
+  t.same(sql.values, [name, id])
+  t.end()
+})
+
+test('append with { unsafe: true }', t => {
+  const table = 'teams'
+  const name = 'name'
+  const id = 123
+
+  const reusableSql = SQL`SELECT id FROM`
+  reusableSql.append(SQL` ${table}`, { unsafe: true })
+  reusableSql.append(SQL` WHERE id = ${id}`)
+
+  const sql = SQL`SELECT * FROM`
+  sql.append(SQL` ${table} `, { unsafe: true })
+  sql.append(SQL`INNER JOIN (`)
+  sql.append(reusableSql)
+  sql.append(SQL`) as t2 ON t2.id = id`)
+
+  t.equal(sql.text, 'SELECT * FROM teams INNER JOIN (SELECT id FROM teams WHERE id = $1) as t2 ON t2.id = id')
+  t.equal(sql.sql, 'SELECT * FROM teams INNER JOIN (SELECT id FROM teams WHERE id = ?) as t2 ON t2.id = id')
+  t.equal(sql.debug, `SELECT * FROM teams INNER JOIN (SELECT id FROM teams WHERE id = ${id}) as t2 ON t2.id = id`)
+  t.end()
+})
