@@ -34,7 +34,7 @@
     "pg": "^8.6.0",
     "sql-template-strings": "^2.2.2",
     "standard": "^12.0.1",
-    "tap": "^12.6.2",
+    "tap": "^15.0.6",
     "tsd": "^0.14.0"
   },
   "standard": {
