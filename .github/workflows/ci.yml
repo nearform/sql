@@ -61,3 +61,11 @@ jobs:
 
       - name: Test Security
         run: npm run test:security
+
+  automerge:
+    needs: build-lint-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v2.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
