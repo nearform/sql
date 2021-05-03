@@ -2,6 +2,8 @@
 const inspect = Symbol.for('nodejs.util.inspect.custom')
 const unsafe = Symbol.for('unsafe')
 
+const QUOTE = '"'
+
 class SqlStatement {
   constructor (strings, values) {
     if (values.some(value => value === undefined)) {
@@ -50,7 +52,9 @@ class SqlStatement {
 
     for (let i = 1; i < this.strings.length; i++) {
       if (values[i - 1 + valueOffset] && values[i - 1 + valueOffset][unsafe]) {
-        text += `"${values[i - 1 + valueOffset].value}"${this.strings[i]}`
+        text += `${QUOTE}${values[i - 1 + valueOffset].value}${QUOTE}${
+          this.strings[i]
+        }`
         values.splice(i - 1 + valueOffset, 1)
         valueOffset--
       } else {
@@ -68,10 +72,9 @@ class SqlStatement {
 
   get debug () {
     let text = this.strings[0]
-    let data
 
     for (let i = 1; i < this.strings.length; i++) {
-      data = this._values[i - 1]
+      let data = this._values[i - 1]
       let quote = "'"
       if (data && data[unsafe]) {
         data = data.value
@@ -130,7 +133,7 @@ class SqlStatement {
 
     this.strings = [...this.strings.slice(0, -1), last + first, ...rest]
 
-    this._values.push.apply(this._values, statement.values)
+    this._values.push.apply(this._values, statement._values)
 
     return this
   }
