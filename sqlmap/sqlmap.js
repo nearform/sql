@@ -33,17 +33,17 @@ const executeMap = (command, config, urlDescription, done) => {
   console.log('⏳  Python command that will be used:', command)
 
   const params = [
-    `./node_modules/sqlmap/sqlmap.py`,
+    './node_modules/sqlmap/sqlmap.py',
     `--url=${urlDescription.url}`,
     `--method=${urlDescription.method}`,
     `--level=${config.level}`,
     `--risk=${config.risk}`,
     `--dbms=${config.dbms}`,
     `--timeout=${config.timeout}`,
-    `-v`,
+    '-v',
     `${config.verbose}`,
-    `--flush-session`,
-    `--batch`
+    '--flush-session',
+    '--batch'
   ]
 
   if (urlDescription.headers) {
@@ -51,7 +51,7 @@ const executeMap = (command, config, urlDescription, done) => {
   }
 
   if (urlDescription.params) {
-    params.push(`-p`)
+    params.push('-p')
     params.push(`${urlDescription.params}`)
   }
   if (urlDescription.data) {
