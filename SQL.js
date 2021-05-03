@@ -4,7 +4,9 @@ const inspect = Symbol.for('nodejs.util.inspect.custom')
 class SqlStatement {
   constructor (strings, values) {
     if (values.some(value => value === undefined)) {
-      throw new Error('SQL`...` strings cannot take `undefined` as values as this can generate invalid sql.')
+      throw new Error(
+        'SQL`...` strings cannot take `undefined` as values as this can generate invalid sql.'
+      )
     }
     this.strings = strings
     this.values = values
@@ -37,10 +39,7 @@ class SqlStatement {
 
     result.strings[result.strings.length - 1] += ' '
 
-    return new SqlStatement(
-      result.strings,
-      result.values
-    )
+    return new SqlStatement(result.strings, result.values)
   }
 
   generateString (type) {
@@ -55,9 +54,7 @@ class SqlStatement {
       text += delimiter + this.strings[i]
     }
 
-    return text
-      .replace(/\s+$/mg, ' ')
-      .replace(/^\s+|\s+$/mg, '')
+    return text.replace(/\s+$/gm, ' ').replace(/^\s+|\s+$/gm, '')
   }
 
   get debug () {
@@ -65,13 +62,11 @@ class SqlStatement {
     let data
     for (var i = 1; i < this.strings.length; i++) {
       data = this.values[i - 1]
-      typeof data === 'string' ? text += "'" + data + "'" : text += data
+      typeof data === 'string' ? (text += "'" + data + "'") : (text += data)
       text += this.strings[i]
     }
 
-    return text
-      .replace(/\s+$/mg, ' ')
-      .replace(/^\s+|\s+$/mg, '')
+    return text.replace(/\s+$/gm, ' ').replace(/^\s+|\s+$/gm, '')
   }
 
   [inspect] () {
@@ -92,7 +87,9 @@ class SqlStatement {
     }
 
     if (!(statement instanceof SqlStatement)) {
-      throw new Error('"append" accepts only template string prefixed with SQL (SQL`...`)')
+      throw new Error(
+        '"append" accepts only template string prefixed with SQL (SQL`...`)'
+      )
     }
 
     if (options && options.unsafe === true) {
@@ -112,11 +109,7 @@ class SqlStatement {
     const last = this.strings[this.strings.length - 1]
     const [first, ...rest] = statement.strings
 
-    this.strings = [
-      ...this.strings.slice(0, -1),
-      last + first,
-      ...rest
-    ]
+    this.strings = [...this.strings.slice(0, -1), last + first, ...rest]
 
     this.values.push.apply(this.values, statement.values)
 
