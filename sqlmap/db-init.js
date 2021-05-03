@@ -10,7 +10,7 @@ function connect (next) {
 }
 
 function dropDb (next) {
-  client.query(`DROP DATABASE IF EXISTS sqlmap`, function (err) {
+  client.query('DROP DATABASE IF EXISTS sqlmap', function (err) {
     if (err) return next(err)
 
     next()

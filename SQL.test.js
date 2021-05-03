@@ -145,7 +145,7 @@ test('SQL helper - build complex query with glue - regression #17', t => {
 
   t.equal(sql.text, 'INSERT INTO users (id) VALUES ($1) , ($2) , ($3)')
   t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?) , (?) , (?)')
-  t.equal(sql.debug, `INSERT INTO users (id) VALUES (1) , (2) , (3)`)
+  t.equal(sql.debug, 'INSERT INTO users (id) VALUES (1) , (2) , (3)')
   t.same(sql.values, [1, 2, 3])
   t.end()
 })
@@ -158,7 +158,7 @@ test('SQL helper - build complex query with static glue - regression #17', t => 
 
   t.equal(sql.text, 'INSERT INTO users (id) VALUES ($1) , ($2) , ($3)')
   t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?) , (?) , (?)')
-  t.equal(sql.debug, `INSERT INTO users (id) VALUES (1) , (2) , (3)`)
+  t.equal(sql.debug, 'INSERT INTO users (id) VALUES (1) , (2) , (3)')
   t.same(sql.values, [1, 2, 3])
   t.end()
 })
@@ -194,7 +194,7 @@ test('SQL helper - build complex query with append and glue', t => {
   )
   t.equal(
     sql.debug,
-    `TEST QUERY glue pieces FROM v1 = 'v1' , v2 = 'v2' , v3 = 'v3' , v4 = 'v4' , v5 = 'v5' WHERE v6 = 'v6' AND v7 = 'v7'`
+    'TEST QUERY glue pieces FROM v1 = \'v1\' , v2 = \'v2\' , v3 = \'v3\' , v4 = \'v4\' , v5 = \'v5\' WHERE v6 = \'v6\' AND v7 = \'v7\''
   )
   t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
@@ -228,7 +228,7 @@ test('SQL helper - build complex query with append', t => {
   )
   t.equal(
     sql.debug,
-    `TEST QUERY glue pieces FROM v1 = 'v1', v2 = 'v2', v3 = 'v3', v4 = 'v4', v5 = 'v5' WHERE v6 = 'v6' AND v7 = 'v7'`
+    'TEST QUERY glue pieces FROM v1 = \'v1\', v2 = \'v2\', v3 = \'v3\', v4 = \'v4\', v5 = \'v5\' WHERE v6 = \'v6\' AND v7 = \'v7\''
   )
   t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
@@ -260,7 +260,7 @@ test('SQL helper - build complex query with append passing simple strings and te
   )
   t.equal(
     sql.debug,
-    `TEST QUERY glue pieces FROM v1 = 'v1', v2 = 'v2', v3 = 'v3', v4 = 'v4', v5 = 'v5', v6 = v6 WHERE v6 = 'v6' AND v7 = 'v7' AND v8 = v8`
+    'TEST QUERY glue pieces FROM v1 = \'v1\', v2 = \'v2\', v3 = \'v3\', v4 = \'v4\', v5 = \'v5\', v6 = v6 WHERE v6 = \'v6\' AND v7 = \'v7\' AND v8 = v8'
   )
   t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
   t.end()
@@ -269,7 +269,7 @@ test('SQL helper - build complex query with append passing simple strings and te
 test('SQL helper - will throw an error if append is called without using SQL', t => {
   const sql = SQL`TEST QUERY glue pieces FROM `
   try {
-    sql.append(`v1 = v1`)
+    sql.append('v1 = v1')
     t.fail('showld throw an error when passing strings not prefixed with SQL')
   } catch (e) {
     t.equal(
@@ -295,7 +295,7 @@ test('SQL helper - build string using append with and without unsafe flag', t =>
   )
   t.equal(
     sql.debug,
-    `TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = 'v2',  AND v3 = whateverThisIs AND v4 = v4`
+    'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = \'v2\',  AND v3 = whateverThisIs AND v4 = v4'
   )
   t.equal(sql.values.length, 1)
   t.ok(sql.values.includes(v2))
@@ -324,7 +324,7 @@ test('SQL helper - build string using append and only unsafe', t => {
   )
   t.equal(
     sql.debug,
-    `TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = v2 AND v3 = whateverThisIs AND v4 = 'v4'`
+    'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = v2 AND v3 = whateverThisIs AND v4 = \'v4\''
   )
 
   t.end()
@@ -353,7 +353,7 @@ test('empty append', t => {
 
   t.equal(sql.text, 'UPDATE teams SET name = $1')
   t.equal(sql.sql, 'UPDATE teams SET name = ?')
-  t.equal(sql.debug, `UPDATE teams SET name = 'team'`)
+  t.equal(sql.debug, 'UPDATE teams SET name = \'team\'')
   t.same(sql.values, ['team'])
 
   t.end()
@@ -362,6 +362,6 @@ test('empty append', t => {
 test('inspect', t => {
   const sql = SQL`UPDATE teams SET name = ${'team'}`
 
-  t.equal(util.inspect(sql), `SQL << UPDATE teams SET name = 'team' >>`)
+  t.equal(util.inspect(sql), 'SQL << UPDATE teams SET name = \'team\' >>')
   t.end()
 })

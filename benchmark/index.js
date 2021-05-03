@@ -21,4 +21,4 @@ suite
   .on('complete', function () {
     console.log('The fastest is ' + this.filter('fastest').map('name'))
   })
-  .run({ 'async': true })
+  .run({ async: true })

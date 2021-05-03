@@ -17,7 +17,7 @@ class SqlStatement {
 
     let carryover
     for (let i = 0; i < pieces.length; i++) {
-      let strings = Array.from(pieces[i].strings)
+      const strings = Array.from(pieces[i].strings)
       if (typeof carryover === 'string') {
         strings[0] = carryover + separator + strings[0]
         carryover = null
@@ -45,7 +45,7 @@ class SqlStatement {
   generateString (type) {
     let text = this.strings[0]
 
-    for (var i = 1; i < this.strings.length; i++) {
+    for (let i = 1; i < this.strings.length; i++) {
       let delimiter = '?'
       if (type === 'pg') {
         delimiter = '$' + i
@@ -60,7 +60,7 @@ class SqlStatement {
   get debug () {
     let text = this.strings[0]
     let data
-    for (var i = 1; i < this.strings.length; i++) {
+    for (let i = 1; i < this.strings.length; i++) {
       data = this.values[i - 1]
       typeof data === 'string' ? (text += "'" + data + "'") : (text += data)
       text += this.strings[i]
