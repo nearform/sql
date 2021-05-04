@@ -18,7 +18,7 @@
     "url": "git+https://github.com/nearform/sql.git"
   },
   "author": "NearForm Ltd",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/nearform/sql/issues"
   },
