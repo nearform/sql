@@ -2,8 +2,6 @@
 const inspect = Symbol.for('nodejs.util.inspect.custom')
 const unsafe = Symbol('unsafe')
 
-const QUOTE = '"'
-
 class SqlStatement {
   constructor (strings, values) {
     if (values.some(value => value === undefined)) {
@@ -51,11 +49,12 @@ class SqlStatement {
     const values = [...this._values]
 
     for (let i = 1; i < this.strings.length; i++) {
-      if (values[i - 1 + valueOffset] && values[i - 1 + valueOffset][unsafe]) {
-        text += `${QUOTE}${values[i - 1 + valueOffset].value}${QUOTE}${
-          this.strings[i]
-        }`
-        values.splice(i - 1 + valueOffset, 1)
+      const valueIndex = i - 1 + valueOffset
+      const valueContainer = values[valueIndex]
+
+      if (valueContainer && valueContainer[unsafe]) {
+        text += `${valueContainer.value}${this.strings[i]}`
+        values.splice(valueIndex, 1)
         valueOffset--
       } else {
         let delimiter = '?'
@@ -78,7 +77,7 @@ class SqlStatement {
       let quote = "'"
       if (data && data[unsafe]) {
         data = data.value
-        quote = '"'
+        quote = ''
       }
       typeof data === 'string' ? (text += quote + data + quote) : (text += data)
       text += this.strings[i]
@@ -152,3 +151,4 @@ module.exports.unsafe = value => ({
   value,
   [unsafe]: true
 })
+module.exports.quoteIdent = value => module.exports.unsafe(`"${value}"`)

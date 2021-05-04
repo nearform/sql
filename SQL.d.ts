@@ -91,6 +91,7 @@ declare namespace SQL {
   export function glue(pieces: StatementLike[], separator: string): SqlStatement
 
   export function unsafe<T>(value: T): { value: T }
+  export function quoteIdent(value: string): { value: string }
 }
 
 /**

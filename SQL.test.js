@@ -5,6 +5,7 @@ const test = require('tap').test
 
 const SQL = require('./SQL')
 const unsafe = SQL.unsafe
+const quoteIdent = SQL.quoteIdent
 
 test('SQL helper - build complex query with append', t => {
   const name = 'Team 5'
@@ -367,17 +368,32 @@ test('inspect', t => {
   t.end()
 })
 
-test('unsafe', t => {
+test('quoteIdent', t => {
   const table = 'teams'
   const name = 'name'
   const id = 123
 
-  const sql = SQL`UPDATE ${unsafe(table)} SET name = ${name} WHERE id = ${id}`
+  const sql = SQL`UPDATE ${quoteIdent(
+    table
+  )} SET name = ${name} WHERE id = ${id}`
 
   t.equal(sql.text, 'UPDATE "teams" SET name = $1 WHERE id = $2')
   t.equal(sql.sql, 'UPDATE "teams" SET name = ? WHERE id = ?')
   t.equal(sql.debug, `UPDATE "teams" SET name = 'name' WHERE id = ${id}`)
   t.same(sql.values, [name, id])
+  t.end()
+})
+
+test('unsafe', t => {
+  const name = 'name'
+  const id = 123
+
+  const sql = SQL`UPDATE teams SET name = '${unsafe(name)}' WHERE id = ${id}`
+
+  t.equal(sql.text, "UPDATE teams SET name = 'name' WHERE id = $1")
+  t.equal(sql.sql, "UPDATE teams SET name = 'name' WHERE id = ?")
+  t.equal(sql.debug, `UPDATE teams SET name = 'name' WHERE id = ${id}`)
+  t.same(sql.values, [id])
   t.end()
 })
 
@@ -412,13 +428,13 @@ test('should be able to append query that is using "{ unsafe: true }"', t => {
   t.end()
 })
 
-test('should be able to append query that is using "unsafe(...)"', t => {
+test('should be able to append query that is using "quoteIdent(...)"', t => {
   const table = 'teams'
   const id = 123
 
-  const reusableSql = SQL`SELECT id FROM ${unsafe(table)} WHERE id = ${id}`
+  const reusableSql = SQL`SELECT id FROM ${quoteIdent(table)} WHERE id = ${id}`
 
-  const sql = SQL`SELECT * FROM ${unsafe(table)} INNER JOIN (`
+  const sql = SQL`SELECT * FROM ${quoteIdent(table)} INNER JOIN (`
   sql.append(reusableSql)
   sql.append(SQL`) as t2 ON t2.id = id`)
 

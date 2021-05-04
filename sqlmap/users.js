@@ -7,7 +7,7 @@ module.exports = async function (fastify) {
     const { limit = 10, page = 1 } = request.query
 
     const { rows: users } = await fastify.pg.query(
-      SQL`SELECT * FROM ${SQL.unsafe(tableName)} LIMIT ${limit} OFFSET ${
+      SQL`SELECT * FROM ${SQL.quoteIdent(tableName)} LIMIT ${limit} OFFSET ${
         limit * (page - 1)
       }`
     )
@@ -19,7 +19,7 @@ module.exports = async function (fastify) {
     const { username, password, email } = request.body
 
     const result = await fastify.pg.query(
-      SQL`INSERT INTO ${SQL.unsafe(
+      SQL`INSERT INTO ${SQL.quoteIdent(
         tableName
       )} (username, email, password) VALUES (${username},${email},${password})`
     )
