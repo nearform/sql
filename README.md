@@ -65,10 +65,14 @@ const username = 'user1'
 const email = 'user1@email.com'
 const userId = 1
 
-const sql = SQL`UPDATE users SET name = ${username}, email = ${email} `
-sql.append(SQL`SET ${dynamicName} = '2'`, { unsafe: true })
+const sql = SQL`UPDATE users SET name = ${username}, email = ${email}`
+sql.append(SQL`, ${dynamicName} = 'dynamicValue'`, { unsafe: true })
 sql.append(SQL`WHERE id = ${userId}`)
 ```
+
+> ⚠️ **Warning**
+>
+> The `unsafe` option interprets the interpolated values as literals and it should be used carefully to avoid introducing SQL injection vulnerabilities.
 
 ### glue(pieces, separator)
 
@@ -128,6 +132,43 @@ sql.append(
 )
 ```
 
+## Utilities
+
+### unsafe(value)
+
+Does a literal interpolation of the provided value, interpreting the provided value as-is.
+
+It works similarly to the `unsafe` option of the `append` method and requires the same security considerations.
+
+```js
+const username = 'john'
+const userId = 1
+
+const sql = SQL`
+  UPDATE users
+  SET username = '${SQL.unsafe(username)}'
+  WHERE id = ${userId}
+`
+```
+
+### quoteIdent(value)
+
+Does a literal interpolation of the provided value, interpreting the provided value as-is and additionally wrapping it in double quotes. It uses `unsafe` internally.
+
+It's convenient to use when schema, table or field names are dynamic and can't be hardcoded in the SQL query string.
+
+```js
+const table = 'users'
+const username = 'john'
+const userId = 1
+
+const sql = SQL`
+  UPDATE ${SQL.quoteIdent(table)}
+  SET username = ${username}
+  WHERE id = ${userId}
+`
+```
+
 ## How it works?
 
 The SQL template string tag parses query and returns an objects that's understandable by [pg](https://www.npmjs.com/package/pg) library:
@@ -137,7 +178,7 @@ const username = 'user'
 const email = 'user@email.com'
 const password = 'Password1'
 
-const sql = SQL`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})` // generate SQL query
+const sql = SQL`INSERT INTO users (username, email, password) VALUES (${username}, ${email}, ${password})` // generate SQL query
 sql.text // INSERT INTO users (username, email, password) VALUES ($1 , $2 , $3) - for pg
 sql.sql // INSERT INTO users (username, email, password) VALUES (? , ? , ?) - for mysql and mysql2
 sql.values // ['user, 'user@email.com', 'Password1']
@@ -186,8 +227,8 @@ Find more about `@nearform/sql` speed [here](benchmark)
 
 # License
 
-Copyright NearForm 2020. Licensed under
-[Apache 2.0](<https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)>)
+Copyright NearForm 2021. Licensed under
+[Apache 2.0][7]
 
 [1]: https://img.shields.io/npm/v/@nearform/sql.svg?style=flat-square
 [2]: https://npmjs.org/package/@nearform/sql
@@ -195,3 +236,4 @@ Copyright NearForm 2020. Licensed under
 [4]: https://github.com/nearform/sql/actions?query=workflow%3ACI
 [5]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square
 [6]: https://github.com/feross/standard
+[7]: https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)

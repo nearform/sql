@@ -1,11 +1,15 @@
 const SQL = require('../SQL')
 
+const tableName = 'users'
+
 module.exports = async function (fastify) {
   fastify.get('/users', async request => {
     const { limit = 10, page = 1 } = request.query
 
     const { rows: users } = await fastify.pg.query(
-      SQL`SELECT * FROM users LIMIT ${limit} OFFSET ${limit * (page - 1)}`
+      SQL`SELECT * FROM ${SQL.quoteIdent(tableName)} LIMIT ${limit} OFFSET ${
+        limit * (page - 1)
+      }`
     )
 
     return users
@@ -15,7 +19,9 @@ module.exports = async function (fastify) {
     const { username, password, email } = request.body
 
     const result = await fastify.pg.query(
-      SQL`INSERT INTO users (username, email, password) VALUES (${username},${email},${password})`
+      SQL`INSERT INTO ${SQL.quoteIdent(
+        tableName
+      )} (username, email, password) VALUES (${username},${email},${password})`
     )
 
     if (result.command !== 'INSERT' || result.rowCount !== 1) {
