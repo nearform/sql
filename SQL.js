@@ -1,6 +1,6 @@
 'use strict'
 const inspect = Symbol.for('nodejs.util.inspect.custom')
-const unsafe = Symbol.for('unsafe')
+const unsafe = Symbol('unsafe')
 
 const QUOTE = '"'
 
