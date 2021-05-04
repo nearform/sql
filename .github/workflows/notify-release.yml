@@ -1,0 +1,13 @@
+name: notify-release
+on:
+  schedule:
+    - cron: '30 8 * * *'
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify release
+        uses: nearform/github-action-notify-release@v1.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-days: 7

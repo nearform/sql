@@ -56,9 +56,6 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Coverage
-        run: npm run coverage
-
       - name: Test Security
         run: npm run test:security
 

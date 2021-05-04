@@ -10,7 +10,6 @@
     "test:security": "node ./sqlmap/sqlmap.js",
     "test:typescript": "tsd",
     "pretest:security": "napa sqlmapproject/sqlmap && node ./sqlmap/db-init.js",
-    "coverage": "tap *.test.js --coverage",
     "lint": "standard",
     "benchmark": "node benchmark/index.js"
   },
@@ -18,7 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/nearform/sql.git"
   },
-  "author": "nearForm Ltd",
+  "author": "NearForm Ltd",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/nearform/sql/issues"
