@@ -12,10 +12,15 @@
     },
     {
       "url": "http://localhost:8080/users",
-      "method": "POST",
       "headers": "Content-Type:application/json",
       "params": "username,password,email",
       "data": "{\"username\":\"user\",\"password\":\"12345\",\"email\":\"user@email.com\"}"
+    },
+    {
+      "url": "http://localhost:8080/table",
+      "headers": "Content-Type:application/json",
+      "params": "tableName,field1,field2",
+      "data": "{\"tableName\":\"some_table\",\"field1\":\"id\",\"field2\":\"username\"}"
     }
   ]
 }

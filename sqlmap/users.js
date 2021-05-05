@@ -1,4 +1,5 @@
 const SQL = require('../SQL')
+const quoteIdent = SQL.quoteIdent
 
 const tableName = 'users'
 
@@ -19,7 +20,7 @@ module.exports = async function (fastify) {
     const { username, password, email } = request.body
 
     const result = await fastify.pg.query(
-      SQL`INSERT INTO ${SQL.quoteIdent(
+      SQL`INSERT INTO ${quoteIdent(
         tableName
       )} (username, email, password) VALUES (${username},${email},${password})`
     )
