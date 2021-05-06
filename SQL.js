@@ -109,7 +109,12 @@ class SqlStatement {
   }
 
   get values () {
-    return this._values.filter(v => !v || !v[wrapped])
+    return this._values.filter(v => !v || !v[wrapped]).reduce((acc, v) => {
+      if (v && v[SqlStatementSymbol]) {
+        return [...acc, ...v.values]
+      }
+      return [...acc, v]
+    }, [])
   }
 
   append (statement, options) {
