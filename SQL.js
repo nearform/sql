@@ -1,6 +1,7 @@
 'use strict'
 const inspect = Symbol.for('nodejs.util.inspect.custom')
 const wrapped = Symbol('wrapped')
+const SQLSymbol = Symbol('SQL')
 
 const quoteIdentifier = require('./quoteIdentifier')
 
@@ -45,9 +46,8 @@ class SqlStatement {
     return new SqlStatement(result.strings, result.values)
   }
 
-  generateString (type) {
+  generateString (type, valueOffset = 0) {
     let text = this.strings[0]
-    let valueOffset = 0
     const values = [...this._values]
 
     for (let i = 1; i < this.strings.length; i++) {
@@ -58,6 +58,10 @@ class SqlStatement {
         text += `${valueContainer.transform(type)}${this.strings[i]}`
         values.splice(valueIndex, 1)
         valueOffset--
+      } else if (valueContainer && valueContainer[SQLSymbol]) {
+        text += `${valueContainer.generateString(type, i + valueOffset - 1)}${this.strings[i]}`
+        valueOffset += valueContainer.values.length - 1
+        values.splice(valueIndex, 1, ...valueContainer.values)
       } else {
         let delimiter = '?'
         if (type === 'pg') {
@@ -79,6 +83,10 @@ class SqlStatement {
       let quote = "'"
       if (data && data[wrapped]) {
         data = data.transform()
+        quote = ''
+      }
+      if (data && data[SQLSymbol]) {
+        data = data.debug
         quote = ''
       }
       typeof data === 'string' ? (text += quote + data + quote) : (text += data)
@@ -138,6 +146,8 @@ class SqlStatement {
 
     return this
   }
+
+  [SQLSymbol] = true
 }
 
 function SQL (strings, ...values) {
