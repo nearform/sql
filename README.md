@@ -153,7 +153,11 @@ const sql = SQL`
 
 ### quoteIdent(value)
 
-Does a literal interpolation of the provided value, interpreting the provided value as-is and additionally wrapping it in double quotes. It uses `unsafe` internally.
+Mimics the native PostgreSQL `quote_ident` and MySQL `quote_identifier` functions.
+
+In PostgreSQL, it wraps the provided value in double quotes `"` and escapes any double quotes existing in the provided value.
+
+In MySQL, it wraps the provided value in backticks `` ` `` and escapes any backticks existing in the provided value.
 
 It's convenient to use when schema, table or field names are dynamic and can't be hardcoded in the SQL query string.
 

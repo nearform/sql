@@ -1,6 +1,8 @@
 'use strict'
 const inspect = Symbol.for('nodejs.util.inspect.custom')
-const unsafe = Symbol('unsafe')
+const wrapped = Symbol('wrapped')
+
+const quoteIdentifier = require('./quoteIdentifier')
 
 class SqlStatement {
   constructor (strings, values) {
@@ -52,8 +54,8 @@ class SqlStatement {
       const valueIndex = i - 1 + valueOffset
       const valueContainer = values[valueIndex]
 
-      if (valueContainer && valueContainer[unsafe]) {
-        text += `${valueContainer.value}${this.strings[i]}`
+      if (valueContainer && valueContainer[wrapped]) {
+        text += `${valueContainer.transform(type)}${this.strings[i]}`
         values.splice(valueIndex, 1)
         valueOffset--
       } else {
@@ -75,8 +77,8 @@ class SqlStatement {
     for (let i = 1; i < this.strings.length; i++) {
       let data = this._values[i - 1]
       let quote = "'"
-      if (data && data[unsafe]) {
-        data = data.value
+      if (data && data[wrapped]) {
+        data = data.transform()
         quote = ''
       }
       typeof data === 'string' ? (text += quote + data + quote) : (text += data)
@@ -99,7 +101,7 @@ class SqlStatement {
   }
 
   get values () {
-    return this._values.filter(v => !v || !v[unsafe])
+    return this._values.filter(v => !v || !v[wrapped])
   }
 
   append (statement, options) {
@@ -148,7 +150,14 @@ module.exports = SQL
 module.exports.SQL = SQL
 module.exports.default = SQL
 module.exports.unsafe = value => ({
-  value,
-  [unsafe]: true
+  transform () {
+    return value
+  },
+  [wrapped]: true
 })
-module.exports.quoteIdent = value => module.exports.unsafe(`"${value}"`)
+module.exports.quoteIdent = value => ({
+  transform (type) {
+    return quoteIdentifier(value, type)
+  },
+  [wrapped]: true
+})

@@ -7,7 +7,7 @@ const SQL = require('./SQL')
 const unsafe = SQL.unsafe
 const quoteIdent = SQL.quoteIdent
 
-test('SQL helper - build complex query with append', t => {
+test('SQL helper - build complex query with append', async t => {
   const name = 'Team 5'
   const description = 'description'
   const teamId = 7
@@ -29,10 +29,9 @@ test('SQL helper - build complex query with append', t => {
     `UPDATE teams SET name = '${name}', description = '${description}' WHERE id = ${teamId} AND org_id = '${organizationId}'`
   )
   t.same(sql.values, [name, description, teamId, organizationId])
-  t.end()
 })
 
-test('SQL helper - multiline', t => {
+test('SQL helper - multiline', async t => {
   const name = 'Team 5'
   const description = 'description'
   const teamId = 7
@@ -56,11 +55,9 @@ test('SQL helper - multiline', t => {
     `UPDATE teams SET name = '${name}', description = '${description}'\nWHERE id = ${teamId} AND org_id = '${organizationId}'`
   )
   t.same(sql.values, [name, description, teamId, organizationId])
-
-  t.end()
 })
 
-test('SQL helper - multiline with emtpy lines', t => {
+test('SQL helper - multiline with emtpy lines', async t => {
   const name = 'Team 5'
   const description = 'description'
   const teamId = 7
@@ -86,10 +83,9 @@ test('SQL helper - multiline with emtpy lines', t => {
     `UPDATE teams SET name = '${name}', description = '${description}'\nWHERE id = ${teamId} AND org_id = '${organizationId}'\nRETURNING id`
   )
   t.same(sql.values, [name, description, teamId, organizationId])
-  t.end()
 })
 
-test('SQL helper - build complex query with glue', t => {
+test('SQL helper - build complex query with glue', async t => {
   const name = 'Team 5'
   const description = 'description'
   const teamId = 7
@@ -117,10 +113,9 @@ test('SQL helper - build complex query with glue', t => {
     `UPDATE teams SET name = '${name}' , description = '${description}' WHERE id = ${teamId} AND org_id = '${organizationId}'`
   )
   t.same(sql.values, [name, description, teamId, organizationId])
-  t.end()
 })
 
-test('SQL helper - build complex query with glue - regression #13', t => {
+test('SQL helper - build complex query with glue - regression #13', async t => {
   const name = 'Team 5'
   const ids = [1, 2, 3].map(id => SQL`${id}`)
 
@@ -136,10 +131,9 @@ test('SQL helper - build complex query with glue - regression #13', t => {
     `UPDATE teams SET name = '${name}' WHERE id IN (1 , 2 , 3 )`
   )
   t.same(sql.values, [name, 1, 2, 3])
-  t.end()
 })
 
-test('SQL helper - build complex query with glue - regression #17', t => {
+test('SQL helper - build complex query with glue - regression #17', async t => {
   const ids = [1, 2, 3].map(id => SQL`(${id})`)
 
   const sql = SQL`INSERT INTO users (id) VALUES `
@@ -149,10 +143,9 @@ test('SQL helper - build complex query with glue - regression #17', t => {
   t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?) , (?) , (?)')
   t.equal(sql.debug, 'INSERT INTO users (id) VALUES (1) , (2) , (3)')
   t.same(sql.values, [1, 2, 3])
-  t.end()
 })
 
-test('SQL helper - build complex query with static glue - regression #17', t => {
+test('SQL helper - build complex query with static glue - regression #17', async t => {
   const ids = [1, 2, 3].map(id => SQL`(${id})`)
 
   const sql = SQL`INSERT INTO users (id) VALUES `
@@ -162,10 +155,9 @@ test('SQL helper - build complex query with static glue - regression #17', t => 
   t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?) , (?) , (?)')
   t.equal(sql.debug, 'INSERT INTO users (id) VALUES (1) , (2) , (3)')
   t.same(sql.values, [1, 2, 3])
-  t.end()
 })
 
-test('SQL helper - build complex query with append and glue', t => {
+test('SQL helper - build complex query with append and glue', async t => {
   const updates = []
   const v1 = 'v1'
   const v2 = 'v2'
@@ -199,10 +191,9 @@ test('SQL helper - build complex query with append and glue', t => {
     "TEST QUERY glue pieces FROM v1 = 'v1' , v2 = 'v2' , v3 = 'v3' , v4 = 'v4' , v5 = 'v5' WHERE v6 = 'v6' AND v7 = 'v7'"
   )
   t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
-  t.end()
 })
 
-test('SQL helper - build complex query with append', t => {
+test('SQL helper - build complex query with append', async t => {
   const v1 = 'v1'
   const v2 = 'v2'
   const v3 = 'v3'
@@ -233,10 +224,9 @@ test('SQL helper - build complex query with append', t => {
     "TEST QUERY glue pieces FROM v1 = 'v1', v2 = 'v2', v3 = 'v3', v4 = 'v4', v5 = 'v5' WHERE v6 = 'v6' AND v7 = 'v7'"
   )
   t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
-  t.end()
 })
 
-test('SQL helper - build complex query with append passing simple strings and template strings', t => {
+test('SQL helper - build complex query with append passing simple strings and template strings', async t => {
   const v1 = 'v1'
   const v2 = 'v2'
   const v3 = 'v3'
@@ -265,10 +255,9 @@ test('SQL helper - build complex query with append passing simple strings and te
     "TEST QUERY glue pieces FROM v1 = 'v1', v2 = 'v2', v3 = 'v3', v4 = 'v4', v5 = 'v5', v6 = v6 WHERE v6 = 'v6' AND v7 = 'v7' AND v8 = v8"
   )
   t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
-  t.end()
 })
 
-test('SQL helper - will throw an error if append is called without using SQL', t => {
+test('SQL helper - will throw an error if append is called without using SQL', async t => {
   const sql = SQL`TEST QUERY glue pieces FROM `
   try {
     sql.append('v1 = v1')
@@ -279,10 +268,9 @@ test('SQL helper - will throw an error if append is called without using SQL', t
       '"append" accepts only template string prefixed with SQL (SQL`...`)'
     )
   }
-  t.end()
 })
 
-test('SQL helper - build string using append with and without unsafe flag', t => {
+test('SQL helper - build string using append with and without unsafe flag', async t => {
   const v2 = 'v2'
   const longName = 'whateverThisIs'
   const sql = SQL`TEST QUERY glue pieces FROM test WHERE test1 == test2`
@@ -301,10 +289,9 @@ test('SQL helper - build string using append with and without unsafe flag', t =>
   )
   t.equal(sql.values.length, 1)
   t.ok(sql.values.includes(v2))
-  t.end()
 })
 
-test('SQL helper - build string using append and only unsafe', t => {
+test('SQL helper - build string using append and only unsafe', async t => {
   const v2 = 'v2'
   const longName = 'whateverThisIs'
 
@@ -328,11 +315,9 @@ test('SQL helper - build string using append and only unsafe', t => {
     sql.debug,
     "TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = v2 AND v3 = whateverThisIs AND v4 = 'v4'"
   )
-
-  t.end()
 })
 
-test('SQL helper - handles js null values as valid `null` sql values', t => {
+test('SQL helper - handles js null values as valid `null` sql values', async t => {
   const name = null
   const id = 123
 
@@ -342,49 +327,44 @@ test('SQL helper - handles js null values as valid `null` sql values', t => {
   t.equal(sql.sql, 'UPDATE teams SET name = ? WHERE id = ?')
   t.equal(sql.debug, `UPDATE teams SET name = null WHERE id = ${id}`)
   t.same(sql.values, [name, id])
-  t.end()
 })
 
-test('SQL helper - throws when building an sql string with an `undefined` value', t => {
+test('SQL helper - throws when building an sql string with an `undefined` value', async t => {
   t.throws(() => SQL`UPDATE teams SET name = ${undefined}`)
-  t.end()
 })
 
-test('empty append', t => {
+test('empty append', async t => {
   const sql = SQL`UPDATE teams SET name = ${'team'}`.append()
 
   t.equal(sql.text, 'UPDATE teams SET name = $1')
   t.equal(sql.sql, 'UPDATE teams SET name = ?')
   t.equal(sql.debug, "UPDATE teams SET name = 'team'")
   t.same(sql.values, ['team'])
-
-  t.end()
 })
 
-test('inspect', t => {
+test('inspect', async t => {
   const sql = SQL`UPDATE teams SET name = ${'team'}`
-
   t.equal(util.inspect(sql), "SQL << UPDATE teams SET name = 'team' >>")
-  t.end()
 })
 
-test('quoteIdent', t => {
-  const table = 'teams'
-  const name = 'name'
-  const id = 123
+test('quoteIdent', async t => {
+  t.test('simple', async t => {
+    const table = 'teams'
+    const name = 'name'
+    const id = 123
 
-  const sql = SQL`UPDATE ${quoteIdent(
-    table
-  )} SET name = ${name} WHERE id = ${id}`
+    const sql = SQL`UPDATE ${quoteIdent(
+      table
+    )} SET name = ${name} WHERE id = ${id}`
 
-  t.equal(sql.text, 'UPDATE "teams" SET name = $1 WHERE id = $2')
-  t.equal(sql.sql, 'UPDATE "teams" SET name = ? WHERE id = ?')
-  t.equal(sql.debug, `UPDATE "teams" SET name = 'name' WHERE id = ${id}`)
-  t.same(sql.values, [name, id])
-  t.end()
+    t.equal(sql.text, 'UPDATE "teams" SET name = $1 WHERE id = $2')
+    t.equal(sql.sql, 'UPDATE `teams` SET name = ? WHERE id = ?')
+    t.equal(sql.debug, `UPDATE "teams" SET name = 'name' WHERE id = ${id}`)
+    t.same(sql.values, [name, id])
+  })
 })
 
-test('unsafe', t => {
+test('unsafe', async t => {
   const name = 'name'
   const id = 123
 
@@ -394,10 +374,9 @@ test('unsafe', t => {
   t.equal(sql.sql, "UPDATE teams SET name = 'name' WHERE id = ?")
   t.equal(sql.debug, `UPDATE teams SET name = 'name' WHERE id = ${id}`)
   t.same(sql.values, [id])
-  t.end()
 })
 
-test('should be able to append query that is using "{ unsafe: true }"', t => {
+test('should be able to append query that is using "{ unsafe: true }"', async t => {
   const table = 'teams'
   const id = 123
 
@@ -424,11 +403,9 @@ test('should be able to append query that is using "{ unsafe: true }"', t => {
     `SELECT * FROM teams INNER JOIN (SELECT id FROM teams WHERE id = ${id}) as t2 ON t2.id = id`
   )
   t.same(sql.values, [id])
-
-  t.end()
 })
 
-test('should be able to append query that is using "quoteIdent(...)"', t => {
+test('should be able to append query that is using "quoteIdent(...)"', async t => {
   const table = 'teams'
   const id = 123
 
@@ -444,12 +421,11 @@ test('should be able to append query that is using "quoteIdent(...)"', t => {
   )
   t.equal(
     sql.sql,
-    'SELECT * FROM "teams" INNER JOIN (SELECT id FROM "teams" WHERE id = ?) as t2 ON t2.id = id'
+    'SELECT * FROM `teams` INNER JOIN (SELECT id FROM `teams` WHERE id = ?) as t2 ON t2.id = id'
   )
   t.equal(
     sql.debug,
     `SELECT * FROM "teams" INNER JOIN (SELECT id FROM "teams" WHERE id = ${id}) as t2 ON t2.id = id`
   )
   t.same(sql.values, [id])
-  t.end()
 })

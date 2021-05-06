@@ -35,7 +35,6 @@ const executeMap = (command, config, urlDescription, done) => {
   const params = [
     './node_modules/sqlmap/sqlmap.py',
     `--url=${urlDescription.url}`,
-    `--method=${urlDescription.method}`,
     `--level=${config.level}`,
     `--risk=${config.risk}`,
     `--dbms=${config.dbms}`,
@@ -45,6 +44,10 @@ const executeMap = (command, config, urlDescription, done) => {
     '--flush-session',
     '--batch'
   ]
+
+  if (urlDescription.method) {
+    params.push(`--method=${urlDescription.method}`)
+  }
 
   if (urlDescription.headers) {
     params.push(`--headers=${urlDescription.headers}`)

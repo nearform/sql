@@ -1,4 +1,5 @@
 const users = require('./users')
+const table = require('./table')
 
 const fastify = require('fastify')({
   logger: false
@@ -6,6 +7,7 @@ const fastify = require('fastify')({
 
 fastify.register(require('fastify-postgres'), require('./config'))
 fastify.register(users)
+fastify.register(table)
 
 const start = async () => {
   try {
