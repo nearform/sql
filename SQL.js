@@ -152,7 +152,7 @@ class SqlStatement {
     return this
   }
 
-  [SqlStatementSymbol] = true
+  get [SqlStatementSymbol] () { return true }
 }
 
 function SQL (strings, ...values) {

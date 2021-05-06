@@ -444,22 +444,22 @@ test('should be able to append within template literal', t => {
   )
   t.equal(
     selectWithLiteralExpression.debug,
-    `SELECT * FROM table`
+    'SELECT * FROM table'
   )
   t.end()
 })
 
 test('should be able to use sql within template literal', t => {
   const pre = 'A'
-  const ids = [ 1, '2', 'three' ]
+  const ids = [1, '2', 'three']
   const idValues = ids.map(id => SQL`${id}`)
-  const names = [ 'Bee', 'Cee', 'Dee' ]
+  const names = ['Bee', 'Cee', 'Dee']
   const nameValues = names.map(name => SQL`${name}`)
   const post = 'B'
   const sql = SQL`UPDATE my_table SET active = FALSE WHERE pre=${pre} AND id IN (${SQL.glue(idValues, ',')}) AND name IN (${SQL.glue(nameValues, ',')}) AND post=${post}`
   t.equal(
     sql.text,
-    `UPDATE my_table SET active = FALSE WHERE pre=$1 AND id IN ($2,$3,$4) AND name IN ($5,$6,$7) AND post=$8`
+    'UPDATE my_table SET active = FALSE WHERE pre=$1 AND id IN ($2,$3,$4) AND name IN ($5,$6,$7) AND post=$8'
   )
   t.same(
     sql.values,
