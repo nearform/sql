@@ -123,7 +123,7 @@ Append has been deprecated in favour of using template literals:
 
 ```js
 const from = SQL`FROM table`
-const sql = SQL`SELECT * ${forma}`
+const sql = SQL`SELECT * ${from}`
 ```
 
 For now, you can still use append as follows:
