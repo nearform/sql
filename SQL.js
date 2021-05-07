@@ -1,7 +1,6 @@
 'use strict'
 const inspect = Symbol.for('nodejs.util.inspect.custom')
 const wrapped = Symbol('wrapped')
-const SqlStatementSymbol = Symbol('SQL')
 
 const quoteIdentifier = require('./quoteIdentifier')
 
@@ -58,8 +57,8 @@ class SqlStatement {
         text += `${valueContainer.transform(type)}${this.strings[i]}`
         values.splice(valueIndex, 1)
         valueOffset--
-      } else if (valueContainer && valueContainer[SqlStatementSymbol]) {
-        text += `${valueContainer.generateString(type, i + valueOffset - 1)}${this.strings[i]}`
+      } else if (valueContainer && valueContainer instanceof SqlStatement) {
+        text += `${valueContainer.generateString(type, valueIndex)}${this.strings[i]}`
         valueOffset += valueContainer.values.length - 1
         values.splice(valueIndex, 1, ...valueContainer.values)
       } else {
@@ -85,7 +84,7 @@ class SqlStatement {
         data = data.transform()
         quote = ''
       }
-      if (data && data[SqlStatementSymbol]) {
+      if (data && data instanceof SqlStatement) {
         data = data.debug
         quote = ''
       }
@@ -110,7 +109,7 @@ class SqlStatement {
 
   get values () {
     return this._values.filter(v => !v || !v[wrapped]).reduce((acc, v) => {
-      if (v && v[SqlStatementSymbol]) {
+      if (v && v instanceof SqlStatement) {
         return [...acc, ...v.values]
       }
       return [...acc, v]
@@ -151,8 +150,6 @@ class SqlStatement {
 
     return this
   }
-
-  get [SqlStatementSymbol] () { return true }
 }
 
 function SQL (strings, ...values) {
