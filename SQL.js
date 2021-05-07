@@ -47,8 +47,9 @@ class SqlStatement {
 
   generateString (type, namedValueOffset = 0) {
     let text = this.strings[0]
-    const values = [...this._values]
     let valueOffset = 0
+    const values = [...this._values]
+    
     for (let i = 1; i < this.strings.length; i++) {
       const valueIndex = i - 1 + valueOffset
       const valueContainer = values[valueIndex]
