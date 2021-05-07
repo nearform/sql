@@ -84,8 +84,7 @@ class SqlStatement {
       if (data && data[wrapped]) {
         data = data.transform()
         quote = ''
-      }
-      if (data instanceof SqlStatement) {
+      } else if (data instanceof SqlStatement) {
         data = data.debug
         quote = ''
       }
