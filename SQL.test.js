@@ -430,7 +430,7 @@ test('should be able to append query that is using "quoteIdent(...)"', async t =
   t.same(sql.values, [id])
 })
 
-test('should be able to append within template literal', t => {
+test('should be able to append a SqlStatement within a template literal', t => {
   const a = SQL`FROM table`
   const selectWithLiteralExpression = SQL`SELECT * ${a}`
 
@@ -449,7 +449,7 @@ test('should be able to append within template literal', t => {
   t.end()
 })
 
-test('should be able to use sql within template literal', t => {
+test('should be able to use SQL.glue within template literal', t => {
   const pre = 'A'
   const ids = [1, '2', 'three']
   const idValues = ids.map(id => SQL`${id}`)
