@@ -8,13 +8,16 @@ A simple SQL injection protection module that allows you to use ES6 template str
 2. [Usage](#usage)
    1. [Linting](#linting)
 3. [Methods](#methods)
-   1. [append](#appendstatement)
-   2. [glue](#gluepieces-separator)
-4. [How it works?](#how-it-works)
-5. [Undefined values and nullable fields](#undefined-values-and-nullable-fields)
-6. [Testing, linting, & coverage](#testing-linting--coverage)
-7. [Benchmark](#benchmark)
-8. [License](#license)
+   1. [glue](#gluepieces-separator)
+   2. (deprecated) [append](#deprecated-appendstatement-options)
+4. [Utilities](#utilities)
+   1. [unsafe](#unsafevalue)
+   2. [quoteIdent](#quoteidentvalue)
+5. [How it works?](#how-it-works)
+6. [Undefined values and nullable fields](#undefined-values-and-nullable-fields)
+7. [Testing, linting, & coverage](#testing-linting--coverage)
+8. [Benchmark](#benchmark)
+9. [License](#license)
 
 ## Install
 
