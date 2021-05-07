@@ -44,12 +44,6 @@ declare class SqlStatement implements StatementLike {
    */
   static glue(pieces: StatementLike[], separator: string): SqlStatement
 
-  /**
-   * Generates a PostgreSQL or MySQL statement string from this statement's strings and values
-   * @param type the type of statement string to be generated
-   */
-  generateString(type?: 'pg' | 'mysql'): string
-
   /** Returns a formatted but unsafe statement of strings and values, useful for debugging */
   get debug(): string
 
