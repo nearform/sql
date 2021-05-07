@@ -467,3 +467,20 @@ test('should be able to use SQL.glue within template literal', t => {
   )
   t.end()
 })
+
+test('should be able to use nested SQLStatements in template literal', t => {
+  const a = 'A'
+  const b = 'B'
+  const c = 'C'
+  const d = 'D'
+  const sql = SQL`UPDATE my_table SET active = FALSE WHERE a=${a} AND ${SQL`b=${b} AND ${SQL`c=${c}`}`} AND d=${d}`
+  t.equal(
+    sql.text,
+    'UPDATE my_table SET active = FALSE WHERE a=$1 AND b=$2 AND c=$3 AND d=$4'
+  )
+  t.same(
+    sql.values,
+    ['A', 'B', 'C', 'D']
+  )
+  t.end()
+})

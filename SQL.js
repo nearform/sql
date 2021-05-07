@@ -45,12 +45,12 @@ class SqlStatement {
     return new SqlStatement(result.strings, result.values)
   }
 
-  generateString (type, valueOffset = 0) {
+  generateString (type, initialValueOffset = 0) {
     let text = this.strings[0]
     const values = [...this._values]
-
+    let valueOffset = initialValueOffset
     for (let i = 1; i < this.strings.length; i++) {
-      const valueIndex = i - 1 + valueOffset
+      const valueIndex = i - 1 + valueOffset - initialValueOffset
       const valueContainer = values[valueIndex]
 
       if (valueContainer && valueContainer[wrapped]) {
@@ -58,7 +58,7 @@ class SqlStatement {
         values.splice(valueIndex, 1)
         valueOffset--
       } else if (valueContainer instanceof SqlStatement) {
-        text += `${valueContainer.generateString(type, valueIndex)}${this.strings[i]}`
+        text += `${valueContainer.generateString(type, valueIndex + initialValueOffset)}${this.strings[i]}`
         valueOffset += valueContainer.values.length - 1
         values.splice(valueIndex, 1, ...valueContainer.values)
       } else {
