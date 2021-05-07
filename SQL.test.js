@@ -429,3 +429,129 @@ test('should be able to append query that is using "quoteIdent(...)"', async t =
   )
   t.same(sql.values, [id])
 })
+
+test('should be able to append a SqlStatement within a template literal', t => {
+  const a = SQL`FROM table`
+  const selectWithLiteralExpression = SQL`SELECT * ${a}`
+
+  t.equal(
+    selectWithLiteralExpression.text,
+    'SELECT * FROM table'
+  )
+  t.equal(
+    selectWithLiteralExpression.sql,
+    'SELECT * FROM table'
+  )
+  t.equal(
+    selectWithLiteralExpression.debug,
+    'SELECT * FROM table'
+  )
+  t.end()
+})
+
+test('should be able to use SQL.glue within template literal', t => {
+  const pre = 'A'
+  const ids = [1, '2', 'three']
+  const idValues = ids.map(id => SQL`${id}`)
+  const names = ['Bee', 'Cee', 'Dee']
+  const nameValues = names.map(name => SQL`${name}`)
+  const post = 'B'
+  const sql = SQL`UPDATE my_table SET active = FALSE WHERE pre=${pre} AND id IN (${SQL.glue(idValues, ',')}) AND name IN (${SQL.glue(nameValues, ',')}) AND post=${post}`
+  t.equal(
+    sql.text,
+    'UPDATE my_table SET active = FALSE WHERE pre=$1 AND id IN ($2,$3,$4) AND name IN ($5,$6,$7) AND post=$8'
+  )
+  t.equal(
+    sql.sql,
+    'UPDATE my_table SET active = FALSE WHERE pre=? AND id IN (?,?,?) AND name IN (?,?,?) AND post=?'
+  )
+  t.equal(
+    sql.debug,
+    'UPDATE my_table SET active = FALSE WHERE pre=\'A\' AND id IN (1,\'2\',\'three\') AND name IN (\'Bee\',\'Cee\',\'Dee\') AND post=\'B\''
+  )
+  t.same(
+    sql.values,
+    ['A', 1, '2', 'three', 'Bee', 'Cee', 'Dee', 'B']
+  )
+  t.end()
+})
+
+test('should be able to use nested SQLStatements in template literal', t => {
+  const a = 'A'
+  const b = 'B'
+  const c = 'C'
+  const d = 'D'
+  const sql = SQL`UPDATE my_table SET active = FALSE WHERE a=${a} AND ${SQL`b=${b} AND ${SQL`c=${c}`}`} AND d=${d}`
+  t.equal(
+    sql.text,
+    'UPDATE my_table SET active = FALSE WHERE a=$1 AND b=$2 AND c=$3 AND d=$4'
+  )
+  t.equal(
+    sql.sql,
+    'UPDATE my_table SET active = FALSE WHERE a=? AND b=? AND c=? AND d=?'
+  )
+  t.equal(
+    sql.debug,
+    'UPDATE my_table SET active = FALSE WHERE a=\'A\' AND b=\'B\' AND c=\'C\' AND d=\'D\''
+  )
+  t.same(
+    sql.values,
+    ['A', 'B', 'C', 'D']
+  )
+  t.end()
+})
+
+test('examples in the readme work as expected', t => {
+  {
+    const username = 'user1'
+    const email = 'user1@email.com'
+    const userId = 1
+
+    const updates = []
+    updates.push(SQL`name = ${username}`)
+    updates.push(SQL`email = ${email}`)
+
+    const sql = SQL`UPDATE users SET ${SQL.glue(updates, ' , ')} WHERE id = ${userId}`
+    t.equal(
+      sql.text,
+      'UPDATE users SET name = $1 , email = $2 WHERE id = $3'
+    )
+  }
+  {
+    const ids = [1, 2, 3]
+    const value = 'test'
+    const sql = SQL`
+      UPDATE users
+      SET property = ${value}
+      WHERE id
+      IN (${SQL.glue(ids.map(id => SQL`${id}`), ' , ')})
+    `
+    t.equal(
+      sql.text,
+      `UPDATE users
+SET property = $1
+WHERE id
+IN ($2 , $3 , $4)`)
+  }
+
+  {
+    const users = [
+      { id: 1, name: 'something' },
+      { id: 2, name: 'something-else' },
+      { id: 3, name: 'something-other' }
+    ]
+
+    const sql = SQL`INSERT INTO users (id, name) VALUES 
+      ${SQL.glue(
+        users.map(user => SQL`(${user.id},${user.name}})`),
+        ' , '
+      )}
+    `
+    t.equal(
+      sql.text,
+      `INSERT INTO users (id, name) VALUES
+($1,$2}) , ($3,$4}) , ($5,$6})`
+    )
+  }
+  t.end()
+})

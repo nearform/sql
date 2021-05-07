@@ -44,12 +44,6 @@ declare class SqlStatement implements StatementLike {
    */
   static glue(pieces: StatementLike[], separator: string): SqlStatement
 
-  /**
-   * Generates a PostgreSQL or MySQL statement string from this statement's strings and values
-   * @param type the type of statement string to be generated
-   */
-  generateString(type?: 'pg' | 'mysql'): string
-
   /** Returns a formatted but unsafe statement of strings and values, useful for debugging */
   get debug(): string
 
@@ -64,6 +58,7 @@ declare class SqlStatement implements StatementLike {
 
   /**
    * Appends another statement onto this statement
+   * @deprecated Please append within template literals, e.g. SQL`SELECT * ${sql}`
    * @param statement a statement to be appended onto this existing statement
    * @param options allows disabling the safe template escaping while appending
    * @example

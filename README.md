@@ -8,13 +8,16 @@ A simple SQL injection protection module that allows you to use ES6 template str
 2. [Usage](#usage)
    1. [Linting](#linting)
 3. [Methods](#methods)
-   1. [append](#appendstatement)
-   2. [glue](#gluepieces-separator)
-4. [How it works?](#how-it-works)
-5. [Undefined values and nullable fields](#undefined-values-and-nullable-fields)
-6. [Testing, linting, & coverage](#testing-linting--coverage)
-7. [Benchmark](#benchmark)
-8. [License](#license)
+   1. [glue](#gluepieces-separator)
+   2. (deprecated) [append](#deprecated-appendstatement-options)
+4. [Utilities](#utilities)
+   1. [unsafe](#unsafevalue)
+   2. [quoteIdent](#quoteidentvalue)
+5. [How it works?](#how-it-works)
+6. [Undefined values and nullable fields](#undefined-values-and-nullable-fields)
+7. [Testing, linting, & coverage](#testing-linting--coverage)
+8. [Benchmark](#benchmark)
+9. [License](#license)
 
 ## Install
 
@@ -58,18 +61,6 @@ sql`SELECT 1`
 
 ## Methods
 
-### append(statement[, options])
-
-```js
-const username = 'user1'
-const email = 'user1@email.com'
-const userId = 1
-
-const sql = SQL`UPDATE users SET name = ${username}, email = ${email}`
-sql.append(SQL`, ${dynamicName} = 'dynamicValue'`, { unsafe: true })
-sql.append(SQL`WHERE id = ${userId}`)
-```
-
 > ⚠️ **Warning**
 >
 > The `unsafe` option interprets the interpolated values as literals and it should be used carefully to avoid introducing SQL injection vulnerabilities.
@@ -81,14 +72,11 @@ const username = 'user1'
 const email = 'user1@email.com'
 const userId = 1
 
-const sql = SQL` UPDATE users SET `
-
 const updates = []
 updates.push(SQL`name = ${username}`)
 updates.push(SQL`email = ${email}`)
 
-sql.append(sql.glue(updates, ' , '))
-sql.append(SQL`WHERE id = ${userId}`)
+const sql = SQL`UPDATE users SET ${SQL.glue(updates, ' , ')} WHERE id = ${userId}`
 ```
 
 or also
@@ -96,13 +84,12 @@ or also
 ```js
 const ids = [1, 2, 3]
 const value = 'test'
-const sql = SQL` UPDATE users SET property = ${value}`
-
-const idsSqls = ids.map(id => SQL`${id}`)
-
-sql.append(SQL`WHERE id IN (`)
-sql.append(sql.glue(idsSqls, ' , '))
-sql.append(SQL`)`)
+const sql = SQL`
+UPDATE users
+SET property = ${value}
+WHERE id
+IN (${SQL.glue(ids.map(id => SQL`${id}`), ' , ')})
+`
 ```
 
 Glue can also be used statically:
@@ -122,14 +109,33 @@ const users = [
   { id: 3, name: 'something-other' }
 ]
 
-const sql = SQL`INSERT INTO users (id, name) VALUES `
-
-sql.append(
-  SQL.glue(
+const sql = SQL`INSERT INTO users (id, name) VALUES 
+  ${SQL.glue(
     users.map(user => SQL`(${user.id},${user.name}})`),
     ' , '
-  )
-)
+  )}
+`
+```
+
+### (deprecated) append(statement[, options])
+
+Append has been deprecated in favour of using template literals:
+
+```js
+const from = SQL`FROM table`
+const sql = SQL`SELECT * ${from}`
+```
+
+For now, you can still use append as follows:
+
+```js
+const username = 'user1'
+const email = 'user1@email.com'
+const userId = 1
+
+const sql = SQL`UPDATE users SET name = ${username}, email = ${email}`
+sql.append(SQL`, ${dynamicName} = 'dynamicValue'`, { unsafe: true })
+sql.append(SQL`WHERE id = ${userId}`)
 ```
 
 ## Utilities

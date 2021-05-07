@@ -45,7 +45,7 @@ class SqlStatement {
     return new SqlStatement(result.strings, result.values)
   }
 
-  generateString (type) {
+  _generateString (type, namedValueOffset = 0) {
     let text = this.strings[0]
     let valueOffset = 0
     const values = [...this._values]
@@ -58,10 +58,14 @@ class SqlStatement {
         text += `${valueContainer.transform(type)}${this.strings[i]}`
         values.splice(valueIndex, 1)
         valueOffset--
+      } else if (valueContainer instanceof SqlStatement) {
+        text += `${valueContainer._generateString(type, valueIndex + namedValueOffset)}${this.strings[i]}`
+        valueOffset += valueContainer.values.length - 1
+        values.splice(valueIndex, 1, ...valueContainer.values)
       } else {
         let delimiter = '?'
         if (type === 'pg') {
-          delimiter = '$' + (i + valueOffset)
+          delimiter = '$' + (i + valueOffset + namedValueOffset)
         }
 
         text += delimiter + this.strings[i]
@@ -80,6 +84,9 @@ class SqlStatement {
       if (data && data[wrapped]) {
         data = data.transform()
         quote = ''
+      } else if (data instanceof SqlStatement) {
+        data = data.debug
+        quote = ''
       }
       typeof data === 'string' ? (text += quote + data + quote) : (text += data)
       text += this.strings[i]
@@ -93,17 +100,27 @@ class SqlStatement {
   }
 
   get text () {
-    return this.generateString('pg')
+    return this._generateString('pg')
   }
 
   get sql () {
-    return this.generateString('mysql')
+    return this._generateString('mysql')
   }
 
   get values () {
-    return this._values.filter(v => !v || !v[wrapped])
+    return this._values.filter(v => !v || !v[wrapped]).reduce((acc, v) => {
+      if (v instanceof SqlStatement) {
+        acc.push(...v.values)
+      } else {
+        acc.push(v)
+      }
+      return acc
+    }, [])
   }
 
+  /**
+   * @deprecated Please append within template literals, e.g. SQL`SELECT * ${sql}`
+   */
   append (statement, options) {
     if (!statement) {
       return this
