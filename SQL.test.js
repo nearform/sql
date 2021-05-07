@@ -461,6 +461,14 @@ test('should be able to use SQL.glue within template literal', t => {
     sql.text,
     'UPDATE my_table SET active = FALSE WHERE pre=$1 AND id IN ($2,$3,$4) AND name IN ($5,$6,$7) AND post=$8'
   )
+  t.equal(
+    sql.sql,
+    'UPDATE my_table SET active = FALSE WHERE pre=? AND id IN (?,?,?) AND name IN (?,?,?) AND post=?'
+  )
+  t.equal(
+    sql.debug,
+    'UPDATE my_table SET active = FALSE WHERE pre=\'A\' AND id IN (1,\'2\',\'three\') AND name IN (\'Bee\',\'Cee\',\'Dee\') AND post=\'B\''
+  )
   t.same(
     sql.values,
     ['A', 1, '2', 'three', 'Bee', 'Cee', 'Dee', 'B']
@@ -477,6 +485,14 @@ test('should be able to use nested SQLStatements in template literal', t => {
   t.equal(
     sql.text,
     'UPDATE my_table SET active = FALSE WHERE a=$1 AND b=$2 AND c=$3 AND d=$4'
+  )
+  t.equal(
+    sql.sql,
+    'UPDATE my_table SET active = FALSE WHERE a=? AND b=? AND c=? AND d=?'
+  )
+  t.equal(
+    sql.debug,
+    'UPDATE my_table SET active = FALSE WHERE a=\'A\' AND b=\'B\' AND c=\'C\' AND d=\'D\''
   )
   t.same(
     sql.values,
