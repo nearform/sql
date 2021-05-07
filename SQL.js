@@ -116,6 +116,9 @@ class SqlStatement {
     }, [])
   }
 
+  /**
+   * @deprecated Please append within template literals, e.g. SQL`SELECT * ${sql}`
+   */
   append (statement, options) {
     if (!statement) {
       return this

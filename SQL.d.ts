@@ -64,6 +64,7 @@ declare class SqlStatement implements StatementLike {
 
   /**
    * Appends another statement onto this statement
+   * @deprecated Please append within template literals, e.g. SQL`SELECT * ${sql}`
    * @param statement a statement to be appended onto this existing statement
    * @param options allows disabling the safe template escaping while appending
    * @example
