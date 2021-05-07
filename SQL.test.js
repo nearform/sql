@@ -500,3 +500,58 @@ test('should be able to use nested SQLStatements in template literal', t => {
   )
   t.end()
 })
+
+test('examples in the readme work as expected', t => {
+  {
+    const username = 'user1'
+    const email = 'user1@email.com'
+    const userId = 1
+
+    const updates = []
+    updates.push(SQL`name = ${username}`)
+    updates.push(SQL`email = ${email}`)
+
+    const sql = SQL`UPDATE users SET ${SQL.glue(updates, ' , ')} WHERE id = ${userId}`
+    t.equal(
+      sql.text,
+      'UPDATE users SET name = $1 , email = $2 WHERE id = $3'
+    )
+  }
+  {
+    const ids = [1, 2, 3]
+    const value = 'test'
+    const sql = SQL`
+      UPDATE users
+      SET property = ${value}
+      WHERE id
+      IN (${SQL.glue(ids.map(id => SQL`${id}`), ' , ')})
+    `
+    t.equal(
+      sql.text,
+      `UPDATE users
+SET property = $1
+WHERE id
+IN ($2 , $3 , $4)`)
+  }
+
+  {
+    const users = [
+      { id: 1, name: 'something' },
+      { id: 2, name: 'something-else' },
+      { id: 3, name: 'something-other' }
+    ]
+
+    const sql = SQL`INSERT INTO users (id, name) VALUES 
+      ${SQL.glue(
+        users.map(user => SQL`(${user.id},${user.name}})`),
+        ' , '
+      )}
+    `
+    t.equal(
+      sql.text,
+      `INSERT INTO users (id, name) VALUES
+($1,$2}) , ($3,$4}) , ($5,$6})`
+    )
+  }
+  t.end()
+})
