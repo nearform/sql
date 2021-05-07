@@ -110,9 +110,11 @@ class SqlStatement {
   get values () {
     return this._values.filter(v => !v || !v[wrapped]).reduce((acc, v) => {
       if (v instanceof SqlStatement) {
-        return [...acc, ...v.values]
+        acc.push(...v.values)
+      } else {
+        acc.push(v)
       }
-      return [...acc, v]
+      return acc
     }, [])
   }
 
