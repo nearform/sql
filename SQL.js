@@ -57,7 +57,7 @@ class SqlStatement {
         text += `${valueContainer.transform(type)}${this.strings[i]}`
         values.splice(valueIndex, 1)
         valueOffset--
-      } else if (valueContainer && valueContainer instanceof SqlStatement) {
+      } else if (valueContainer instanceof SqlStatement) {
         text += `${valueContainer.generateString(type, valueIndex)}${this.strings[i]}`
         valueOffset += valueContainer.values.length - 1
         values.splice(valueIndex, 1, ...valueContainer.values)
@@ -84,7 +84,7 @@ class SqlStatement {
         data = data.transform()
         quote = ''
       }
-      if (data && data instanceof SqlStatement) {
+      if (data instanceof SqlStatement) {
         data = data.debug
         quote = ''
       }
@@ -109,7 +109,7 @@ class SqlStatement {
 
   get values () {
     return this._values.filter(v => !v || !v[wrapped]).reduce((acc, v) => {
-      if (v && v instanceof SqlStatement) {
+      if (v instanceof SqlStatement) {
         return [...acc, ...v.values]
       }
       return [...acc, v]
