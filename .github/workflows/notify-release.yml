@@ -2,6 +2,7 @@ name: notify-release
 on:
   schedule:
     - cron: '30 8 * * *'
+  workflow_dispatch:
 jobs:
   run:
     runs-on: ubuntu-latest
