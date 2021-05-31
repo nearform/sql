@@ -1,4 +1,4 @@
-import * as SQL from '.'
+import SQL from '.'
 import { glue, SqlStatement } from '.'
 import { expectType, expectError } from 'tsd'
 
