@@ -235,6 +235,10 @@ npm run lint            # lints via standardJS.
 
 Find more about `@nearform/sql` speed [here](benchmark)
 
+## Editor syntax higlighting
+To get syntax higlighting, you can use extension/plugin for these editors:
+ - Visual studio code: [thebearingedge.vscode-sql-lit](https://marketplace.visualstudio.com/items?itemName=thebearingedge.vscode-sql-lit) 
+
 # License
 
 Copyright NearForm 2021. Licensed under
