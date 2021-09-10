@@ -30,7 +30,7 @@ class SqlStatement {
         carryover = strings.splice(-1)[0]
       }
       result.strings.push.apply(result.strings, strings)
-      result.values.push.apply(result.values, pieces[i].values)
+      result.values.push.apply(result.values, pieces[i]._values)
     }
     if (typeof carryover === 'string') {
       result.strings.push(carryover)
@@ -59,7 +59,10 @@ class SqlStatement {
         values.splice(valueIndex, 1)
         valueOffset--
       } else if (valueContainer instanceof SqlStatement) {
-        text += `${valueContainer._generateString(type, valueIndex + namedValueOffset)}${this.strings[i]}`
+        text += `${valueContainer._generateString(
+          type,
+          valueIndex + namedValueOffset
+        )}${this.strings[i]}`
         valueOffset += valueContainer.values.length - 1
         values.splice(valueIndex, 1, ...valueContainer.values)
       } else {
@@ -108,14 +111,16 @@ class SqlStatement {
   }
 
   get values () {
-    return this._values.filter(v => !v || !v[wrapped]).reduce((acc, v) => {
-      if (v instanceof SqlStatement) {
-        acc.push(...v.values)
-      } else {
-        acc.push(v)
-      }
-      return acc
-    }, [])
+    return this._values
+      .filter(v => !v || !v[wrapped])
+      .reduce((acc, v) => {
+        if (v instanceof SqlStatement) {
+          acc.push(...v.values)
+        } else {
+          acc.push(v)
+        }
+        return acc
+      }, [])
   }
 
   /**
