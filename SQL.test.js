@@ -157,6 +157,15 @@ test('SQL helper - build complex query with static glue - regression #17', async
   t.same(sql.values, [1, 2, 3])
 })
 
+test('glue works with quoteIdent - regression #77', async t => {
+  const sql = SQL.glue([SQL`SELECT * FROM ${quoteIdent('tbl')}`])
+
+  t.equal(sql.text, 'SELECT * FROM "tbl"')
+  t.equal(sql.sql, 'SELECT * FROM `tbl`')
+  t.equal(sql.debug, 'SELECT * FROM "tbl"')
+  t.same(sql.values, [])
+})
+
 test('SQL helper - build complex query with append and glue', async t => {
   const updates = []
   const v1 = 'v1'
@@ -434,18 +443,9 @@ test('should be able to append a SqlStatement within a template literal', t => {
   const a = SQL`FROM table`
   const selectWithLiteralExpression = SQL`SELECT * ${a}`
 
-  t.equal(
-    selectWithLiteralExpression.text,
-    'SELECT * FROM table'
-  )
-  t.equal(
-    selectWithLiteralExpression.sql,
-    'SELECT * FROM table'
-  )
-  t.equal(
-    selectWithLiteralExpression.debug,
-    'SELECT * FROM table'
-  )
+  t.equal(selectWithLiteralExpression.text, 'SELECT * FROM table')
+  t.equal(selectWithLiteralExpression.sql, 'SELECT * FROM table')
+  t.equal(selectWithLiteralExpression.debug, 'SELECT * FROM table')
   t.end()
 })
 
@@ -456,7 +456,10 @@ test('should be able to use SQL.glue within template literal', t => {
   const names = ['Bee', 'Cee', 'Dee']
   const nameValues = names.map(name => SQL`${name}`)
   const post = 'B'
-  const sql = SQL`UPDATE my_table SET active = FALSE WHERE pre=${pre} AND id IN (${SQL.glue(idValues, ',')}) AND name IN (${SQL.glue(nameValues, ',')}) AND post=${post}`
+  const sql = SQL`UPDATE my_table SET active = FALSE WHERE pre=${pre} AND id IN (${SQL.glue(
+    idValues,
+    ','
+  )}) AND name IN (${SQL.glue(nameValues, ',')}) AND post=${post}`
   t.equal(
     sql.text,
     'UPDATE my_table SET active = FALSE WHERE pre=$1 AND id IN ($2,$3,$4) AND name IN ($5,$6,$7) AND post=$8'
@@ -467,12 +470,9 @@ test('should be able to use SQL.glue within template literal', t => {
   )
   t.equal(
     sql.debug,
-    'UPDATE my_table SET active = FALSE WHERE pre=\'A\' AND id IN (1,\'2\',\'three\') AND name IN (\'Bee\',\'Cee\',\'Dee\') AND post=\'B\''
+    "UPDATE my_table SET active = FALSE WHERE pre='A' AND id IN (1,'2','three') AND name IN ('Bee','Cee','Dee') AND post='B'"
   )
-  t.same(
-    sql.values,
-    ['A', 1, '2', 'three', 'Bee', 'Cee', 'Dee', 'B']
-  )
+  t.same(sql.values, ['A', 1, '2', 'three', 'Bee', 'Cee', 'Dee', 'B'])
   t.end()
 })
 
@@ -492,12 +492,9 @@ test('should be able to use nested SQLStatements in template literal', t => {
   )
   t.equal(
     sql.debug,
-    'UPDATE my_table SET active = FALSE WHERE a=\'A\' AND b=\'B\' AND c=\'C\' AND d=\'D\''
+    "UPDATE my_table SET active = FALSE WHERE a='A' AND b='B' AND c='C' AND d='D'"
   )
-  t.same(
-    sql.values,
-    ['A', 'B', 'C', 'D']
-  )
+  t.same(sql.values, ['A', 'B', 'C', 'D'])
   t.end()
 })
 
@@ -511,11 +508,11 @@ test('examples in the readme work as expected', t => {
     updates.push(SQL`name = ${username}`)
     updates.push(SQL`email = ${email}`)
 
-    const sql = SQL`UPDATE users SET ${SQL.glue(updates, ' , ')} WHERE id = ${userId}`
-    t.equal(
-      sql.text,
-      'UPDATE users SET name = $1 , email = $2 WHERE id = $3'
-    )
+    const sql = SQL`UPDATE users SET ${SQL.glue(
+      updates,
+      ' , '
+    )} WHERE id = ${userId}`
+    t.equal(sql.text, 'UPDATE users SET name = $1 , email = $2 WHERE id = $3')
   }
   {
     const ids = [1, 2, 3]
@@ -524,14 +521,18 @@ test('examples in the readme work as expected', t => {
       UPDATE users
       SET property = ${value}
       WHERE id
-      IN (${SQL.glue(ids.map(id => SQL`${id}`), ' , ')})
+      IN (${SQL.glue(
+        ids.map(id => SQL`${id}`),
+        ' , '
+      )})
     `
     t.equal(
       sql.text,
       `UPDATE users
 SET property = $1
 WHERE id
-IN ($2 , $3 , $4)`)
+IN ($2 , $3 , $4)`
+    )
   }
 
   {
