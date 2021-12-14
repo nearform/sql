@@ -40,10 +40,10 @@ jobs:
 
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v2
 
       - name: Use Node.js
-        uses: actions/setup-node@v2.5.0
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -62,7 +62,10 @@ jobs:
   automerge:
     needs: build-lint-test
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
     steps:
-      - uses: fastify/github-action-merge-dependabot@v3.0.2
+      - uses: fastify/github-action-merge-dependabot@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
