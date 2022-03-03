@@ -373,6 +373,84 @@ test('quoteIdent', async t => {
   })
 })
 
+test('insert', async t => {
+  t.test('simple', async t => {
+    const table = 'teams'
+    const firstName = 'Alan'
+    const lastName = 'Turing'
+
+    const insertData = {
+      first_name: firstName,
+      last_name: lastName
+    }
+
+    const sql = SQL.insert(table, insertData)
+    t.equal(
+      sql.text,
+      'INSERT INTO "teams" (first_name, last_name) VALUES ($1, $2)'
+    )
+    t.equal(
+      sql.sql,
+      'INSERT INTO `teams` (first_name, last_name) VALUES (?, ?)'
+    )
+    t.equal(
+      sql.debug,
+      `INSERT INTO "teams" (first_name, last_name) VALUES ('Alan', 'Turing')`
+    )
+    t.same(sql.values, [firstName, lastName])
+  })
+  t.test('with toSnakeCase flag for camel case', async t => {
+    const table = 'teams'
+    const firstName = 'Alan'
+    const lastName = 'Turing'
+
+    const insertData = {
+      firstName,
+      lastName
+    }
+
+    const sql = SQL.insert(table, insertData, { toSnakeCase: true })
+    t.equal(
+      sql.text,
+      'INSERT INTO "teams" (first_name, last_name) VALUES ($1, $2)'
+    )
+    t.equal(
+      sql.sql,
+      'INSERT INTO `teams` (first_name, last_name) VALUES (?, ?)'
+    )
+    t.equal(
+      sql.debug,
+      `INSERT INTO "teams" (first_name, last_name) VALUES ('Alan', 'Turing')`
+    )
+    t.same(sql.values, [firstName, lastName])
+  })
+  t.test('with toSnakeCase flag for pascal case', async t => {
+    const table = 'teams'
+    const firstName = 'Alan'
+    const lastName = 'Turing'
+
+    const insertData = {
+      FirstName: firstName,
+      LastName: lastName
+    }
+
+    const sql = SQL.insert(table, insertData, { toSnakeCase: true })
+    t.equal(
+      sql.text,
+      'INSERT INTO "teams" (first_name, last_name) VALUES ($1, $2)'
+    )
+    t.equal(
+      sql.sql,
+      'INSERT INTO `teams` (first_name, last_name) VALUES (?, ?)'
+    )
+    t.equal(
+      sql.debug,
+      `INSERT INTO "teams" (first_name, last_name) VALUES ('Alan', 'Turing')`
+    )
+    t.same(sql.values, [firstName, lastName])
+  })
+})
+
 test('unsafe', async t => {
   const name = 'name'
   const id = 123
@@ -542,7 +620,7 @@ IN ($2 , $3 , $4)`
       { id: 3, name: 'something-other' }
     ]
 
-    const sql = SQL`INSERT INTO users (id, name) VALUES 
+    const sql = SQL`INSERT INTO users (id, name) VALUES
       ${SQL.glue(
         users.map(user => SQL`(${user.id},${user.name}})`),
         ' , '
