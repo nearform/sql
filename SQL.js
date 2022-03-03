@@ -17,28 +17,19 @@ class SqlStatement {
 
   glue (pieces, separator) {
     const result = { strings: [], values: [] }
-
     let carryover
     for (let i = 0; i < pieces.length; i++) {
       const strings = Array.from(pieces[i].strings)
-      if (typeof carryover === 'string') {
+      if (i > 0) {
         strings[0] = carryover + separator + strings[0]
         carryover = null
       }
-
-      if (strings.length > pieces[i].values.length) {
-        carryover = strings.splice(-1)[0]
-      }
+      carryover = strings.splice(-1)[0]
       result.strings.push.apply(result.strings, strings)
       result.values.push.apply(result.values, pieces[i]._values)
     }
-    if (typeof carryover === 'string') {
-      result.strings.push(carryover)
-    }
 
-    if (result.strings.length === result.values.length) {
-      result.strings.push('')
-    }
+    result.strings.push(carryover)
 
     result.strings[result.strings.length - 1] += ' '
 

@@ -498,6 +498,50 @@ test('should be able to use nested SQLStatements in template literal', t => {
   t.end()
 })
 
+test('should be able to use the result of SQL.glue([SQL``, SQL``], separator) result with multiple values inside the first element of SQL.glue', t => {
+  const ids = [1, 2, 3]
+  const name = 'foo'
+  const inIds = SQL.glue(
+    ids.map((id) => SQL`${id}`),
+    ' , '
+  )
+  const condition = SQL`tsd.id IN (${inIds})`
+  // this condition results in:
+  // {
+  //     "strings": [
+  //         "tsd.id IN (",
+  //         ")"
+  //     ],
+  //     "_values": [
+  //         {
+  //             "strings": [
+  //                 "",
+  //                 " , ",
+  //                 " , ",
+  //                 " "
+  //             ],
+  //             "_values": [
+  //                 1,
+  //                 2,
+  //                 3
+  //             ]
+  //         }
+  //     ]
+  // }
+
+  const filters = [
+    condition,
+    SQL`tsd.name = ${name}`
+  ]
+
+  const sql = SQL`SELECT tsd.* FROM data tsd WHERE ${SQL.glue(filters, ' AND ')}`
+  t.equal(
+    sql.text,
+    'SELECT tsd.* FROM data tsd WHERE tsd.id IN ($1 , $2 , $3) AND tsd.name = $4'
+  )
+  t.end()
+})
+
 test('examples in the readme work as expected', t => {
   {
     const username = 'user1'
