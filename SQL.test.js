@@ -518,7 +518,11 @@ test('should be able to use the result of SQL.glue([SQL``, SQL``], separator) re
     'SELECT tsd.* FROM data tsd WHERE tsd.id IN ($1 , $2 , $3) AND tsd.name = $4'
   )
   t.same(
-    sql.values, [1,2,3, "foo"]
+    sql.values, [1, 2, 3, 'foo']
+  )
+  t.equal(
+    sql.debug,
+    "SELECT tsd.* FROM data tsd WHERE tsd.id IN (1 , 2 , 3) AND tsd.name = 'foo'"
   )
   t.end()
 })
