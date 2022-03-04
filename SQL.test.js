@@ -506,28 +506,6 @@ test('should be able to use the result of SQL.glue([SQL``, SQL``], separator) re
     ' , '
   )
   const condition = SQL`tsd.id IN (${inIds})`
-  // this condition results in:
-  // {
-  //     "strings": [
-  //         "tsd.id IN (",
-  //         ")"
-  //     ],
-  //     "_values": [
-  //         {
-  //             "strings": [
-  //                 "",
-  //                 " , ",
-  //                 " , ",
-  //                 " "
-  //             ],
-  //             "_values": [
-  //                 1,
-  //                 2,
-  //                 3
-  //             ]
-  //         }
-  //     ]
-  // }
 
   const filters = [
     condition,

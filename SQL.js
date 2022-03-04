@@ -22,7 +22,6 @@ class SqlStatement {
       const strings = Array.from(pieces[i].strings)
       if (i > 0) {
         strings[0] = carryover + separator + strings[0]
-        carryover = null
       }
       carryover = strings.splice(-1)[0]
       result.strings.push.apply(result.strings, strings)
