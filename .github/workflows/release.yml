@@ -27,3 +27,4 @@ jobs:
           npm-tag: ${{ github.event.inputs.tag }}
           semver: ${{ github.event.inputs.semver }}
           commit-message: 'chore: release {version}'
+          build-command: npm ci
