@@ -219,6 +219,38 @@ const sql = SQL`INSERT into users (name, address) VALUES (${user.name},${
 sql.debug // INSERT INTO users (name, address) VALUES ('foo bar',null)
 ```
 
+## Example custom utilities
+
+### Insert into from a JS object
+
+The below example functions can be used to generate an INSERT INTO statement from an object, which will convert the object keys to snake case.
+
+```js
+function insert(table, insertData, { toSnakeCase } = { toSnakeCase: false }) {
+  const builder = Object.entries(insertData).reduce(
+    (acc, [column, value]) => {
+      if (value !== undefined) {
+        toSnakeCase
+          ? acc.columns.push(pascalOrCamelToSnake(column))
+          : acc.columns.push(column)
+        acc.values.push(SQL`${value}`)
+      }
+      return acc
+    },
+    { columns: [], values: [] }
+  )
+  return SQL`INSERT INTO ${SQL.quoteIdent(table)} (${SQL.unsafe(
+    builder.columns.join(', ')
+  )}) VALUES (${SQL.glue(builder.values, ', ')})`
+}
+
+const pascalOrCamelToSnake = str =>
+  str[0].toLowerCase() +
+  str
+    .slice(1, str.length)
+    .replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+```
+
 ## Testing, linting, & coverage
 
 This module can be tested and reported on in a variety of ways...

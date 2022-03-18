@@ -168,24 +168,6 @@ function SQL (strings, ...values) {
 
 SQL.glue = SqlStatement.prototype.glue
 
-function insert (table, insertData, { toSnakeCase } = { toSnakeCase: false }) {
-  const builder = Object.entries(insertData).reduce(
-    (acc, [column, value]) => {
-      if (value !== undefined) {
-        toSnakeCase
-          ? acc.columns.push(pascalOrCamelToSnake(column))
-          : acc.columns.push(column)
-        acc.values.push(SQL`${value}`)
-      }
-      return acc
-    },
-    { columns: [], values: [] }
-  )
-  return SQL`INSERT INTO ${SQL.quoteIdent(table)} (${SQL.unsafe(
-    builder.columns.join(', ')
-  )}) VALUES (${SQL.glue(builder.values, ', ')})`
-}
-
 module.exports = SQL
 module.exports.SQL = SQL
 module.exports.default = SQL
@@ -201,10 +183,3 @@ module.exports.quoteIdent = value => ({
   },
   [wrapped]: true
 })
-module.exports.insert = insert
-
-const pascalOrCamelToSnake = str =>
-  str[0].toLowerCase() +
-  str
-    .slice(1, str.length)
-    .replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
