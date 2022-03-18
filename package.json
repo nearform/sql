@@ -9,7 +9,7 @@
     "posttest": "tsd",
     "test:security": "node ./sqlmap/sqlmap.js",
     "test:typescript": "tsd",
-    "pretest:security": "napa sqlmapproject/sqlmap && node ./sqlmap/db-init.js",
+    "pretest:security": "napa https://github.com/sqlmapproject/sqlmap && node ./sqlmap/db-init.js",
     "lint": "standard",
     "benchmark": "node benchmark/index.js"
   },
