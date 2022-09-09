@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
     branches:
@@ -7,16 +6,17 @@ on:
   pull_request:
     branches:
       - master
-
 jobs:
   build-lint-test:
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
-        node-version: [14, 16, 18]
-        os: [ubuntu-latest]
-
+        node-version:
+          - 14
+          - 16
+          - 18
+        os:
+          - ubuntu-latest
     services:
       postgres:
         image: postgres:9-alpine
@@ -26,39 +26,28 @@ jobs:
           POSTGRES_DB: sqlmap
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
-
     env:
       PGPASS: postgres
       PGUSER: postgres
       PGDB: sqlmap
       PGHOST: localhost
-
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
-
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-
       - name: Install
         run: npm install
-
       - name: Lint
         run: npm run lint
-
       - name: Test
         run: npm test
-
       - name: Test Security
         run: npm run test:security
-
   automerge:
     needs: build-lint-test
     runs-on: ubuntu-latest
@@ -67,5 +56,3 @@ jobs:
       contents: write
     steps:
       - uses: fastify/github-action-merge-dependabot@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
