@@ -40,7 +40,7 @@ class SqlStatement {
    * It returns a clean SQL format using the object properties defined in the mapper function
    */
   map (array, mapFunc) {
-    if ((mapFunc instanceof Function) && array && array.length > 0) {
+    if ((mapFunc instanceof Function) && array?.length > 0) {
       return this.glue(
         array.map(mapFunc).map((item) => SQL`${item}`),
         ','
