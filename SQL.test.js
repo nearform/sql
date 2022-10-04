@@ -88,15 +88,15 @@ test('SQL helper - multiline with emtpy lines', async t => {
 test('SQL helper - build complex query with map', async t => {
   const objArray = [{
     id: 1,
-    name: 'name1',
+    name: 'name1'
   },
   {
     id: 2,
-    name: 'name2',
+    name: 'name2'
   },
   {
     id: 3,
-    name: 'name3',
+    name: 'name3'
   }]
 
   const mapFunction = (objItem) => {
