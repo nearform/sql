@@ -35,6 +35,20 @@ class SqlStatement {
     return new SqlStatement(result.strings, result.values)
   }
 
+  /**
+   * A function that accepts an array of objects and a mapper function
+   * It returns a clean SQL format using the object properties defined in the mapper function
+   */
+  map (array, mapFunc) {
+    if ((mapFunc instanceof Function) && array && array.length > 0) {
+      return this.glue(
+        array.map(mapFunc).map((item) => SQL`${item}`),
+        ','
+      )
+    }
+    return null
+  }
+
   _generateString (type, namedValueOffset = 0) {
     let text = this.strings[0]
     let valueOffset = 0
@@ -157,6 +171,7 @@ function SQL (strings, ...values) {
 }
 
 SQL.glue = SqlStatement.prototype.glue
+SQL.map = SqlStatement.prototype.map
 
 module.exports = SQL
 module.exports.SQL = SQL
