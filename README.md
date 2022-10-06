@@ -9,7 +9,7 @@ A simple SQL injection protection module that allows you to use ES6 template str
    1. [Linting](#linting)
 3. [Methods](#methods)
    1. [glue](#gluepieces-separator)
-   2. [map](#map)
+   2. [map](#maparray-mapperfunction)
    2. (deprecated) [append](#deprecated-appendstatement-options)
 4. [Utilities](#utilities)
    1. [unsafe](#unsafevalue)
@@ -144,11 +144,9 @@ const objArray = [{
   name: 'name3'
 }]
 
-const mapperFunction = (objItem) => {
-  return objItem.id
-}
-
+const mapperFunction = (objItem) => objItem.id
 const values = SQL.map(objArray, mapperFunction)
+
 const sql = SQL`INSERT INTO users (id) VALUES (${values})`
 ```
 
