@@ -85,6 +85,69 @@ test('SQL helper - multiline with emtpy lines', async t => {
   t.same(sql.values, [name, description, teamId, organizationId])
 })
 
+test('SQL helper - build complex query with map', async t => {
+  const objArray = [{
+    id: 1,
+    name: 'name1'
+  },
+  {
+    id: 2,
+    name: 'name2'
+  },
+  {
+    id: 3,
+    name: 'name3'
+  }]
+
+  const mapFunction = (objItem) => {
+    return objItem.id
+  }
+
+  const values = SQL.map(objArray, mapFunction)
+  t.equal(values !== null, true)
+  const sql = SQL`INSERT INTO users (id) VALUES (${values})`
+
+  t.equal(sql.text, 'INSERT INTO users (id) VALUES ($1,$2,$3)')
+  t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?,?,?)')
+  t.equal(sql.debug, 'INSERT INTO users (id) VALUES (1,2,3)')
+  t.same(sql.values, [1, 2, 3])
+})
+
+test('SQL helper - build complex query with map - using default mapper function', async t => {
+  const ids = [1, 2, 3]
+
+  const values = SQL.map(ids)
+  t.equal(values !== null, true)
+  const sql = SQL`INSERT INTO users (id) VALUES (${values})`
+
+  t.equal(sql.text, 'INSERT INTO users (id) VALUES ($1,$2,$3)')
+  t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?,?,?)')
+  t.equal(sql.debug, 'INSERT INTO users (id) VALUES (1,2,3)')
+  t.same(sql.values, [1, 2, 3])
+})
+
+test('SQL helper - build complex query with map - empty array', async t => {
+  const objArray = []
+
+  const mapFunction = (objItem) => {
+    return objItem.id
+  }
+
+  const values = SQL.map(objArray, mapFunction)
+
+  t.equal(values, null)
+})
+
+test('SQL helper - build complex query with map - bad mapper function', async t => {
+  const objArray = []
+
+  const mapFunction = null
+
+  const values = SQL.map(objArray, mapFunction)
+
+  t.equal(values, null)
+})
+
 test('SQL helper - build complex query with glue', async t => {
   const name = 'Team 5'
   const description = 'description'
