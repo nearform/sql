@@ -113,6 +113,19 @@ test('SQL helper - build complex query with map', async t => {
   t.same(sql.values, [1, 2, 3])
 })
 
+test('SQL helper - build complex query with map - using default mapper function', async t => {
+  const ids = [1, 2, 3]
+
+  const values = SQL.map(ids)
+  t.equal(values !== null, true)
+  const sql = SQL`INSERT INTO users (id) VALUES (${values})`
+
+  t.equal(sql.text, 'INSERT INTO users (id) VALUES ($1,$2,$3)')
+  t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?,?,?)')
+  t.equal(sql.debug, 'INSERT INTO users (id) VALUES (1,2,3)')
+  t.same(sql.values, [1, 2, 3])
+})
+
 test('SQL helper - build complex query with map - empty array', async t => {
   const objArray = []
 

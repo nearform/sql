@@ -39,7 +39,7 @@ class SqlStatement {
    * A function that accepts an array of objects and a mapper function
    * It returns a clean SQL format using the object properties defined in the mapper function
    */
-  map (array, mapFunc) {
+  map (array, mapFunc = i => i) {
     if ((mapFunc instanceof Function) && array?.length > 0) {
       return this.glue(
         array.map(mapFunc).map((item) => SQL`${item}`),
