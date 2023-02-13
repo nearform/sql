@@ -5,13 +5,13 @@ const fastify = require('fastify')({
   logger: false
 })
 
-fastify.register(require('fastify-postgres'), require('./config'))
+fastify.register(require('@fastify/postgres'), require('./config'))
 fastify.register(users)
 fastify.register(table)
 
 const start = async () => {
   try {
-    await fastify.listen(8080)
+    await fastify.listen({ port: 8080 })
     // it's important to write to stdout as the sqlmap script relies on
     // a message from the server to be printed on stdout to start the checks
     console.log('Server started')
