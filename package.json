@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/nearform/sql#readme",
   "devDependencies": {
+    "@fastify/postgres": "^4.0.0",
     "async": "^3.2.0",
     "benchmark": "^2.1.4",
     "fastify": "^4.0.1",
@@ -33,8 +34,7 @@
     "sql-template-strings": "^2.2.2",
     "standard": "^17.0.0",
     "tap": "^16.0.0",
-    "tsd": "^0.25.0",
-    "@fastify/postgres": "^4.0.0"
+    "tsd": "^0.25.0"
   },
   "standard": {
     "ignore": [
