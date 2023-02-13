@@ -24,10 +24,10 @@
   },
   "homepage": "https://github.com/nearform/sql#readme",
   "devDependencies": {
+    "@fastify/postgres": "^4.0.0",
     "async": "^3.2.0",
     "benchmark": "^2.1.4",
     "fastify": "^4.0.1",
-    "fastify-postgres": "^3.1.0",
     "jsonfile": "^6.1.0",
     "napa": "^3.0.0",
     "pg": "^8.6.0",

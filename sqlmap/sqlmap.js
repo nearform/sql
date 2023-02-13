@@ -13,14 +13,14 @@ if (!endpoints) {
   process.exit(1)
 }
 
-const findPython2 = (pythonCommand, done) => {
+const findPython3 = (pythonCommand, done) => {
   return exec(`${pythonCommand} --version`, function (err, stdout, stderr) {
     if (err) {
       return done(err)
     }
 
-    if (stderr.indexOf('Python 2.') >= 0) {
-      console.log(chalk.green(`✅  '${pythonCommand}' is a valid Python2`))
+    if (stdout.indexOf('Python 3.') >= 0) {
+      console.log(chalk.green(`✅  '${pythonCommand}' is a valid Python3`))
       return done(null, pythonCommand)
     }
     return done(null, false)
@@ -119,7 +119,7 @@ fastify.stderr.on('data', data => {
   console.log(`${fastifyChalk} ${chalk.red(data)}`)
 })
 
-async.detect(['python2', 'python'], findPython2, function (err, python) {
+async.detect(['python3'], findPython3, function (err, python) {
   if (err) {
     return console.error(chalk.red(err))
   }
