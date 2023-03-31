@@ -17,11 +17,15 @@ on:
 
 jobs:
   release:
+    permissions:
+      pull-requests: write
+      contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: nearform/optic-release-automation-action@v4
+      - uses: nearform-actions/optic-release-automation-action@v4
         with:
           npm-token: ${{ secrets[format('NPM_TOKEN_{0}', github.actor)] || secrets.NPM_TOKEN }}
           optic-token: ${{ secrets[format('OPTIC_TOKEN_{0}', github.actor)] || secrets.OPTIC_TOKEN }}
           semver: ${{ github.event.inputs.semver }}
           commit-message: 'chore: release {version}'
+
