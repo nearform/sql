@@ -44,6 +44,30 @@ declare class SqlStatement implements StatementLike {
    */
   static glue(pieces: StatementLike[], separator: string): SqlStatement
 
+  /**
+   * A function that accepts an array of objects and a mapper function
+   * It returns a clean SQL format using the object properties defined in the mapper function
+   * @param array the items to be mapped over
+   * @param mapFunc a function to transform the items in `array` before being added to the SqlStatement
+   * @example
+   * SQL`SELECT ${SQL.map([1,2,3])}`
+   * @example
+   * SQL`SELECT ${SQL.map([1,2,3], x => x ** 2)}`
+   */
+  map<T>(array: T[], mapFunc?: (item: T) => unknown): SqlStatement
+
+  /**
+   * A function that accepts an array of objects and a mapper function
+   * It returns a clean SQL format using the object properties defined in the mapper function
+   * @param array the items to be mapped over
+   * @param mapFunc a function to transform the items in `array` before being added to the SqlStatement
+   * @example
+   * SQL`SELECT ${SQL.map([1,2,3])}`
+   * @example
+   * SQL`SELECT ${SQL.map([1,2,3], x => x ** 2)}`
+   */
+  static map<T>(array: T[], mapFunc?: (item: T) => unknown): SqlStatement
+
   /** Returns a formatted but unsafe statement of strings and values, useful for debugging */
   get debug(): string
 
@@ -84,6 +108,18 @@ declare namespace SQL {
    * )
    */
   export function glue(pieces: StatementLike[], separator: string): SqlStatement
+
+  /**
+   * A function that accepts an array of objects and a mapper function
+   * It returns a clean SQL format using the object properties defined in the mapper function
+   * @param array the items to be mapped over
+   * @param mapFunc a function to transform the items in `array` before being added to the SqlStatement
+   * @example
+   * SQL`SELECT ${SQL.map([1,2,3])}`
+   * @example
+   * SQL`SELECT ${SQL.map([1,2,3], x => x ** 2)}`
+   */
+  export function map<T>(array: T[], mapFunc?: (item: T) => unknown): SqlStatement
 
   export function unsafe<T>(value: T): { value: T }
   export function quoteIdent(value: string): { value: string }
