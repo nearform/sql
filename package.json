@@ -1,6 +1,6 @@
 {
   "name": "@nearform/sql",
-  "version": "1.10.4",
+  "version": "1.10.5",
   "description": "SQL injection protection module",
   "main": "./SQL.js",
   "types": "./SQL.d.ts",
