@@ -1,6 +1,6 @@
 'use strict'
 
-const {describe, test} = require('node:test')
+const { describe, test } = require('node:test')
 const quoteIdentifier = require('./quoteIdentifier')
 
 describe('quoteIdentifier', () => {

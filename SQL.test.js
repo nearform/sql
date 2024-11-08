@@ -1,7 +1,7 @@
 'use strict'
 
 const util = require('util')
-const {test} = require('node:test')
+const { test } = require('node:test')
 
 const SQL = require('./SQL')
 const unsafe = SQL.unsafe
