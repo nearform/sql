@@ -5,7 +5,7 @@
   "main": "./SQL.js",
   "types": "./SQL.d.ts",
   "scripts": {
-    "test": "tap *.test.js",
+    "test": "node --test *.test.js",
     "posttest": "tsd",
     "test:security": "node ./sqlmap/sqlmap.js",
     "test:typescript": "tsd",
@@ -33,7 +33,6 @@
     "pg": "^8.6.0",
     "sql-template-strings": "^2.2.2",
     "standard": "^17.0.0",
-    "tap": "^16.0.0",
     "tsd": "^0.31.0"
   },
   "standard": {

@@ -1,36 +1,37 @@
 'use strict'
 
-const test = require('tap').test
+const { describe, test } = require('node:test')
+const assert = require('node:assert')
 const quoteIdentifier = require('./quoteIdentifier')
 
-test('quoteIdentifier', async t => {
-  t.test('pg', async t => {
-    t.test('simple', async t => {
-      t.same(quoteIdentifier('identifier', 'pg'), '"identifier"')
+describe('quoteIdentifier', () => {
+  describe('pg', () => {
+    test('simple', async t => {
+      assert.deepStrictEqual(quoteIdentifier('identifier', 'pg'), '"identifier"')
     })
 
-    t.test('with quotes', async t => {
-      t.same(quoteIdentifier('"quotes"', 'pg'), '"""quotes"""')
-    })
-  })
-
-  t.test('mysql', async t => {
-    t.test('simple', async t => {
-      t.same(quoteIdentifier('identifier', 'mysql'), '`identifier`')
-    })
-
-    t.test('with quotes', async t => {
-      t.same(quoteIdentifier('`quotes`', 'mysql'), '```quotes```')
+    test('with quotes', async t => {
+      assert.deepStrictEqual(quoteIdentifier('"quotes"', 'pg'), '"""quotes"""')
     })
   })
 
-  t.test('without type', async t => {
-    t.test('simple', async t => {
-      t.same(quoteIdentifier('identifier'), '"identifier"')
+  describe('mysql', () => {
+    test('simple', t => {
+      assert.deepStrictEqual(quoteIdentifier('identifier', 'mysql'), '`identifier`')
     })
 
-    t.test('with quotes', async t => {
-      t.same(quoteIdentifier('"quotes"'), '"""quotes"""')
+    test('with quotes', t => {
+      assert.deepStrictEqual(quoteIdentifier('`quotes`', 'mysql'), '```quotes```')
+    })
+  })
+
+  describe('without type', () => {
+    test('simple', t => {
+      assert.deepStrictEqual(quoteIdentifier('identifier'), '"identifier"')
+    })
+
+    test('with quotes', t => {
+      assert.deepStrictEqual(quoteIdentifier('"quotes"'), '"""quotes"""')
     })
   })
 })

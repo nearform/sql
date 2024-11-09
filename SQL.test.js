@@ -1,7 +1,8 @@
 'use strict'
 
 const util = require('util')
-const test = require('tap').test
+const { test } = require('node:test')
+const assert = require('node:assert')
 
 const SQL = require('./SQL')
 const unsafe = SQL.unsafe
@@ -16,19 +17,19 @@ test('SQL helper - build complex query with append', async t => {
   const sql = SQL`UPDATE teams SET name = ${name}, description = ${description} `
   sql.append(SQL`WHERE id = ${teamId} AND org_id = ${organizationId}`)
 
-  t.equal(
+  assert.equal(
     sql.text,
     'UPDATE teams SET name = $1, description = $2 WHERE id = $3 AND org_id = $4'
   )
-  t.equal(
+  assert.equal(
     sql.sql,
     'UPDATE teams SET name = ?, description = ? WHERE id = ? AND org_id = ?'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     `UPDATE teams SET name = '${name}', description = '${description}' WHERE id = ${teamId} AND org_id = '${organizationId}'`
   )
-  t.same(sql.values, [name, description, teamId, organizationId])
+  assert.deepStrictEqual(sql.values, [name, description, teamId, organizationId])
 })
 
 test('SQL helper - multiline', async t => {
@@ -42,19 +43,19 @@ test('SQL helper - multiline', async t => {
     WHERE id = ${teamId} AND org_id = ${organizationId}
   `
 
-  t.equal(
+  assert.equal(
     sql.text,
     'UPDATE teams SET name = $1, description = $2\nWHERE id = $3 AND org_id = $4'
   )
-  t.equal(
+  assert.equal(
     sql.sql,
     'UPDATE teams SET name = ?, description = ?\nWHERE id = ? AND org_id = ?'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     `UPDATE teams SET name = '${name}', description = '${description}'\nWHERE id = ${teamId} AND org_id = '${organizationId}'`
   )
-  t.same(sql.values, [name, description, teamId, organizationId])
+  assert.deepStrictEqual(sql.values, [name, description, teamId, organizationId])
 })
 
 test('SQL helper - multiline with emtpy lines', async t => {
@@ -70,19 +71,19 @@ test('SQL helper - multiline with emtpy lines', async t => {
     RETURNING id
   `
 
-  t.equal(
+  assert.equal(
     sql.text,
     'UPDATE teams SET name = $1, description = $2\nWHERE id = $3 AND org_id = $4\nRETURNING id'
   )
-  t.equal(
+  assert.equal(
     sql.sql,
     'UPDATE teams SET name = ?, description = ?\nWHERE id = ? AND org_id = ?\nRETURNING id'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     `UPDATE teams SET name = '${name}', description = '${description}'\nWHERE id = ${teamId} AND org_id = '${organizationId}'\nRETURNING id`
   )
-  t.same(sql.values, [name, description, teamId, organizationId])
+  assert.deepStrictEqual(sql.values, [name, description, teamId, organizationId])
 })
 
 test('SQL helper - build complex query with map', async t => {
@@ -104,26 +105,26 @@ test('SQL helper - build complex query with map', async t => {
   }
 
   const values = SQL.map(objArray, mapFunction)
-  t.equal(values !== null, true)
+  assert.equal(values !== null, true)
   const sql = SQL`INSERT INTO users (id) VALUES (${values})`
 
-  t.equal(sql.text, 'INSERT INTO users (id) VALUES ($1,$2,$3)')
-  t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?,?,?)')
-  t.equal(sql.debug, 'INSERT INTO users (id) VALUES (1,2,3)')
-  t.same(sql.values, [1, 2, 3])
+  assert.equal(sql.text, 'INSERT INTO users (id) VALUES ($1,$2,$3)')
+  assert.equal(sql.sql, 'INSERT INTO users (id) VALUES (?,?,?)')
+  assert.equal(sql.debug, 'INSERT INTO users (id) VALUES (1,2,3)')
+  assert.deepStrictEqual(sql.values, [1, 2, 3])
 })
 
 test('SQL helper - build complex query with map - using default mapper function', async t => {
   const ids = [1, 2, 3]
 
   const values = SQL.map(ids)
-  t.equal(values !== null, true)
+  assert.equal(values !== null, true)
   const sql = SQL`INSERT INTO users (id) VALUES (${values})`
 
-  t.equal(sql.text, 'INSERT INTO users (id) VALUES ($1,$2,$3)')
-  t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?,?,?)')
-  t.equal(sql.debug, 'INSERT INTO users (id) VALUES (1,2,3)')
-  t.same(sql.values, [1, 2, 3])
+  assert.equal(sql.text, 'INSERT INTO users (id) VALUES ($1,$2,$3)')
+  assert.equal(sql.sql, 'INSERT INTO users (id) VALUES (?,?,?)')
+  assert.equal(sql.debug, 'INSERT INTO users (id) VALUES (1,2,3)')
+  assert.deepStrictEqual(sql.values, [1, 2, 3])
 })
 
 test('SQL helper - build complex query with map - empty array', async t => {
@@ -135,7 +136,7 @@ test('SQL helper - build complex query with map - empty array', async t => {
 
   const values = SQL.map(objArray, mapFunction)
 
-  t.equal(values, null)
+  assert.equal(values, null)
 })
 
 test('SQL helper - build complex query with map - bad mapper function', async t => {
@@ -145,7 +146,7 @@ test('SQL helper - build complex query with map - bad mapper function', async t 
 
   const values = SQL.map(objArray, mapFunction)
 
-  t.equal(values, null)
+  assert.equal(values, null)
 })
 
 test('SQL helper - build complex query with glue', async t => {
@@ -163,19 +164,19 @@ test('SQL helper - build complex query with glue', async t => {
   sql.append(sql.glue(updates, ' , '))
   sql.append(SQL`WHERE id = ${teamId} AND org_id = ${organizationId}`)
 
-  t.equal(
+  assert.equal(
     sql.text,
     'UPDATE teams SET name = $1 , description = $2 WHERE id = $3 AND org_id = $4'
   )
-  t.equal(
+  assert.equal(
     sql.sql,
     'UPDATE teams SET name = ? , description = ? WHERE id = ? AND org_id = ?'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     `UPDATE teams SET name = '${name}' , description = '${description}' WHERE id = ${teamId} AND org_id = '${organizationId}'`
   )
-  t.same(sql.values, [name, description, teamId, organizationId])
+  assert.deepStrictEqual(sql.values, [name, description, teamId, organizationId])
 })
 
 test('SQL helper - build complex query with glue - regression #13', async t => {
@@ -187,13 +188,13 @@ test('SQL helper - build complex query with glue - regression #13', async t => {
   sql.append(sql.glue(ids, ' , '))
   sql.append(SQL`)`)
 
-  t.equal(sql.text, 'UPDATE teams SET name = $1 WHERE id IN ($2 , $3 , $4 )')
-  t.equal(sql.sql, 'UPDATE teams SET name = ? WHERE id IN (? , ? , ? )')
-  t.equal(
+  assert.equal(sql.text, 'UPDATE teams SET name = $1 WHERE id IN ($2 , $3 , $4 )')
+  assert.equal(sql.sql, 'UPDATE teams SET name = ? WHERE id IN (? , ? , ? )')
+  assert.equal(
     sql.debug,
     `UPDATE teams SET name = '${name}' WHERE id IN (1 , 2 , 3 )`
   )
-  t.same(sql.values, [name, 1, 2, 3])
+  assert.deepStrictEqual(sql.values, [name, 1, 2, 3])
 })
 
 test('SQL helper - build complex query with glue - regression #17', async t => {
@@ -202,10 +203,10 @@ test('SQL helper - build complex query with glue - regression #17', async t => {
   const sql = SQL`INSERT INTO users (id) VALUES `
   sql.append(sql.glue(ids, ' , '))
 
-  t.equal(sql.text, 'INSERT INTO users (id) VALUES ($1) , ($2) , ($3)')
-  t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?) , (?) , (?)')
-  t.equal(sql.debug, 'INSERT INTO users (id) VALUES (1) , (2) , (3)')
-  t.same(sql.values, [1, 2, 3])
+  assert.equal(sql.text, 'INSERT INTO users (id) VALUES ($1) , ($2) , ($3)')
+  assert.equal(sql.sql, 'INSERT INTO users (id) VALUES (?) , (?) , (?)')
+  assert.equal(sql.debug, 'INSERT INTO users (id) VALUES (1) , (2) , (3)')
+  assert.deepStrictEqual(sql.values, [1, 2, 3])
 })
 
 test('SQL helper - build complex query with static glue - regression #17', async t => {
@@ -214,19 +215,19 @@ test('SQL helper - build complex query with static glue - regression #17', async
   const sql = SQL`INSERT INTO users (id) VALUES `
   sql.append(SQL.glue(ids, ' , '))
 
-  t.equal(sql.text, 'INSERT INTO users (id) VALUES ($1) , ($2) , ($3)')
-  t.equal(sql.sql, 'INSERT INTO users (id) VALUES (?) , (?) , (?)')
-  t.equal(sql.debug, 'INSERT INTO users (id) VALUES (1) , (2) , (3)')
-  t.same(sql.values, [1, 2, 3])
+  assert.equal(sql.text, 'INSERT INTO users (id) VALUES ($1) , ($2) , ($3)')
+  assert.equal(sql.sql, 'INSERT INTO users (id) VALUES (?) , (?) , (?)')
+  assert.equal(sql.debug, 'INSERT INTO users (id) VALUES (1) , (2) , (3)')
+  assert.deepStrictEqual(sql.values, [1, 2, 3])
 })
 
 test('glue works with quoteIdent - regression #77', async t => {
   const sql = SQL.glue([SQL`SELECT * FROM ${quoteIdent('tbl')}`])
 
-  t.equal(sql.text, 'SELECT * FROM "tbl"')
-  t.equal(sql.sql, 'SELECT * FROM `tbl`')
-  t.equal(sql.debug, 'SELECT * FROM "tbl"')
-  t.same(sql.values, [])
+  assert.equal(sql.text, 'SELECT * FROM "tbl"')
+  assert.equal(sql.sql, 'SELECT * FROM `tbl`')
+  assert.equal(sql.debug, 'SELECT * FROM "tbl"')
+  assert.deepStrictEqual(sql.values, [])
 })
 
 test('SQL helper - build complex query with append and glue', async t => {
@@ -250,19 +251,19 @@ test('SQL helper - build complex query with append and glue', async t => {
   sql.append(SQL`WHERE v6 = ${v6} `)
   sql.append(SQL`AND v7 = ${v7}`)
 
-  t.equal(
+  assert.equal(
     sql.text,
     'TEST QUERY glue pieces FROM v1 = $1 , v2 = $2 , v3 = $3 , v4 = $4 , v5 = $5 WHERE v6 = $6 AND v7 = $7'
   )
-  t.equal(
+  assert.equal(
     sql.sql,
     'TEST QUERY glue pieces FROM v1 = ? , v2 = ? , v3 = ? , v4 = ? , v5 = ? WHERE v6 = ? AND v7 = ?'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     "TEST QUERY glue pieces FROM v1 = 'v1' , v2 = 'v2' , v3 = 'v3' , v4 = 'v4' , v5 = 'v5' WHERE v6 = 'v6' AND v7 = 'v7'"
   )
-  t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
+  assert.deepStrictEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
 })
 
 test('SQL helper - build complex query with append', async t => {
@@ -283,19 +284,19 @@ test('SQL helper - build complex query with append', async t => {
   sql.append(SQL`WHERE v6 = ${v6} `)
   sql.append(SQL`AND v7 = ${v7}`)
 
-  t.equal(
+  assert.equal(
     sql.text,
     'TEST QUERY glue pieces FROM v1 = $1, v2 = $2, v3 = $3, v4 = $4, v5 = $5 WHERE v6 = $6 AND v7 = $7'
   )
-  t.equal(
+  assert.equal(
     sql.sql,
     'TEST QUERY glue pieces FROM v1 = ?, v2 = ?, v3 = ?, v4 = ?, v5 = ? WHERE v6 = ? AND v7 = ?'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     "TEST QUERY glue pieces FROM v1 = 'v1', v2 = 'v2', v3 = 'v3', v4 = 'v4', v5 = 'v5' WHERE v6 = 'v6' AND v7 = 'v7'"
   )
-  t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
+  assert.deepStrictEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
 })
 
 test('SQL helper - build complex query with append passing simple strings and template strings', async t => {
@@ -318,15 +319,15 @@ test('SQL helper - build complex query with append passing simple strings and te
   sql.append(SQL`AND v7 = ${v7} `)
   sql.append(SQL`AND v8 = v8`)
 
-  t.equal(
+  assert.equal(
     sql.text,
     'TEST QUERY glue pieces FROM v1 = $1, v2 = $2, v3 = $3, v4 = $4, v5 = $5, v6 = v6 WHERE v6 = $6 AND v7 = $7 AND v8 = v8'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     "TEST QUERY glue pieces FROM v1 = 'v1', v2 = 'v2', v3 = 'v3', v4 = 'v4', v5 = 'v5', v6 = v6 WHERE v6 = 'v6' AND v7 = 'v7' AND v8 = v8"
   )
-  t.same(sql.values, [v1, v2, v3, v4, v5, v6, v7])
+  assert.deepStrictEqual(sql.values, [v1, v2, v3, v4, v5, v6, v7])
 })
 
 test('SQL helper - will throw an error if append is called without using SQL', async t => {
@@ -335,7 +336,7 @@ test('SQL helper - will throw an error if append is called without using SQL', a
     sql.append('v1 = v1')
     t.fail('showld throw an error when passing strings not prefixed with SQL')
   } catch (e) {
-    t.equal(
+    assert.equal(
       e.message,
       '"append" accepts only template string prefixed with SQL (SQL`...`)'
     )
@@ -351,16 +352,16 @@ test('SQL helper - build string using append with and without unsafe flag', asyn
   sql.append(SQL` AND v3 = ${longName}`, { unsafe: true })
   sql.append(SQL` AND v4 = v4`, { unsafe: true })
 
-  t.equal(
+  assert.equal(
     sql.text,
     'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = $1,  AND v3 = whateverThisIs AND v4 = v4'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     "TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = 'v2',  AND v3 = whateverThisIs AND v4 = v4"
   )
-  t.equal(sql.values.length, 1)
-  t.ok(sql.values.includes(v2))
+  assert.equal(sql.values.length, 1)
+  assert.ok(sql.values.includes(v2))
 })
 
 test('SQL helper - build string using append and only unsafe', async t => {
@@ -368,10 +369,10 @@ test('SQL helper - build string using append and only unsafe', async t => {
   const longName = 'whateverThisIs'
 
   const sql = SQL`TEST QUERY glue pieces FROM test WHERE test1 == test2`
-  t.equal(sql.text, 'TEST QUERY glue pieces FROM test WHERE test1 == test2')
+  assert.equal(sql.text, 'TEST QUERY glue pieces FROM test WHERE test1 == test2')
 
   sql.append(SQL` AND v1 = v1,`, { unsafe: true })
-  t.equal(
+  assert.equal(
     sql.text,
     'TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1,'
   )
@@ -379,11 +380,11 @@ test('SQL helper - build string using append and only unsafe', async t => {
   sql.append(SQL` AND v2 = ${v2} AND v3 = ${longName} AND v4 = 'v4'`, {
     unsafe: true
   })
-  t.equal(
+  assert.equal(
     sql.text,
     "TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = v2 AND v3 = whateverThisIs AND v4 = 'v4'"
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     "TEST QUERY glue pieces FROM test WHERE test1 == test2 AND v1 = v1, AND v2 = v2 AND v3 = whateverThisIs AND v4 = 'v4'"
   )
@@ -395,28 +396,28 @@ test('SQL helper - handles js null values as valid `null` sql values', async t =
 
   const sql = SQL`UPDATE teams SET name = ${name} WHERE id = ${id}`
 
-  t.equal(sql.text, 'UPDATE teams SET name = $1 WHERE id = $2')
-  t.equal(sql.sql, 'UPDATE teams SET name = ? WHERE id = ?')
-  t.equal(sql.debug, `UPDATE teams SET name = null WHERE id = ${id}`)
-  t.same(sql.values, [name, id])
+  assert.equal(sql.text, 'UPDATE teams SET name = $1 WHERE id = $2')
+  assert.equal(sql.sql, 'UPDATE teams SET name = ? WHERE id = ?')
+  assert.equal(sql.debug, `UPDATE teams SET name = null WHERE id = ${id}`)
+  assert.deepStrictEqual(sql.values, [name, id])
 })
 
 test('SQL helper - throws when building an sql string with an `undefined` value', async t => {
-  t.throws(() => SQL`UPDATE teams SET name = ${undefined}`)
+  assert.throws(() => SQL`UPDATE teams SET name = ${undefined}`)
 })
 
 test('empty append', async t => {
   const sql = SQL`UPDATE teams SET name = ${'team'}`.append()
 
-  t.equal(sql.text, 'UPDATE teams SET name = $1')
-  t.equal(sql.sql, 'UPDATE teams SET name = ?')
-  t.equal(sql.debug, "UPDATE teams SET name = 'team'")
-  t.same(sql.values, ['team'])
+  assert.equal(sql.text, 'UPDATE teams SET name = $1')
+  assert.equal(sql.sql, 'UPDATE teams SET name = ?')
+  assert.equal(sql.debug, "UPDATE teams SET name = 'team'")
+  assert.deepStrictEqual(sql.values, ['team'])
 })
 
 test('inspect', async t => {
   const sql = SQL`UPDATE teams SET name = ${'team'}`
-  t.equal(util.inspect(sql), "SQL << UPDATE teams SET name = 'team' >>")
+  assert.equal(util.inspect(sql), "SQL << UPDATE teams SET name = 'team' >>")
 })
 
 test('quoteIdent', async t => {
@@ -429,10 +430,10 @@ test('quoteIdent', async t => {
       table
     )} SET name = ${name} WHERE id = ${id}`
 
-    t.equal(sql.text, 'UPDATE "teams" SET name = $1 WHERE id = $2')
-    t.equal(sql.sql, 'UPDATE `teams` SET name = ? WHERE id = ?')
-    t.equal(sql.debug, `UPDATE "teams" SET name = 'name' WHERE id = ${id}`)
-    t.same(sql.values, [name, id])
+    assert.equal(sql.text, 'UPDATE "teams" SET name = $1 WHERE id = $2')
+    assert.equal(sql.sql, 'UPDATE `teams` SET name = ? WHERE id = ?')
+    assert.equal(sql.debug, `UPDATE "teams" SET name = 'name' WHERE id = ${id}`)
+    assert.deepStrictEqual(sql.values, [name, id])
   })
 })
 
@@ -442,10 +443,10 @@ test('unsafe', async t => {
 
   const sql = SQL`UPDATE teams SET name = '${unsafe(name)}' WHERE id = ${id}`
 
-  t.equal(sql.text, "UPDATE teams SET name = 'name' WHERE id = $1")
-  t.equal(sql.sql, "UPDATE teams SET name = 'name' WHERE id = ?")
-  t.equal(sql.debug, `UPDATE teams SET name = 'name' WHERE id = ${id}`)
-  t.same(sql.values, [id])
+  assert.equal(sql.text, "UPDATE teams SET name = 'name' WHERE id = $1")
+  assert.equal(sql.sql, "UPDATE teams SET name = 'name' WHERE id = ?")
+  assert.equal(sql.debug, `UPDATE teams SET name = 'name' WHERE id = ${id}`)
+  assert.deepStrictEqual(sql.values, [id])
 })
 
 test('should be able to append query that is using "{ unsafe: true }"', async t => {
@@ -462,19 +463,19 @@ test('should be able to append query that is using "{ unsafe: true }"', async t 
   sql.append(reusableSql)
   sql.append(SQL`) as t2 ON t2.id = id`)
 
-  t.equal(
+  assert.equal(
     sql.text,
     'SELECT * FROM teams INNER JOIN (SELECT id FROM teams WHERE id = $1) as t2 ON t2.id = id'
   )
-  t.equal(
+  assert.equal(
     sql.sql,
     'SELECT * FROM teams INNER JOIN (SELECT id FROM teams WHERE id = ?) as t2 ON t2.id = id'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     `SELECT * FROM teams INNER JOIN (SELECT id FROM teams WHERE id = ${id}) as t2 ON t2.id = id`
   )
-  t.same(sql.values, [id])
+  assert.deepStrictEqual(sql.values, [id])
 })
 
 test('should be able to append query that is using "quoteIdent(...)"', async t => {
@@ -487,29 +488,28 @@ test('should be able to append query that is using "quoteIdent(...)"', async t =
   sql.append(reusableSql)
   sql.append(SQL`) as t2 ON t2.id = id`)
 
-  t.equal(
+  assert.equal(
     sql.text,
     'SELECT * FROM "teams" INNER JOIN (SELECT id FROM "teams" WHERE id = $1) as t2 ON t2.id = id'
   )
-  t.equal(
+  assert.equal(
     sql.sql,
     'SELECT * FROM `teams` INNER JOIN (SELECT id FROM `teams` WHERE id = ?) as t2 ON t2.id = id'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     `SELECT * FROM "teams" INNER JOIN (SELECT id FROM "teams" WHERE id = ${id}) as t2 ON t2.id = id`
   )
-  t.same(sql.values, [id])
+  assert.deepStrictEqual(sql.values, [id])
 })
 
 test('should be able to append a SqlStatement within a template literal', t => {
   const a = SQL`FROM table`
   const selectWithLiteralExpression = SQL`SELECT * ${a}`
 
-  t.equal(selectWithLiteralExpression.text, 'SELECT * FROM table')
-  t.equal(selectWithLiteralExpression.sql, 'SELECT * FROM table')
-  t.equal(selectWithLiteralExpression.debug, 'SELECT * FROM table')
-  t.end()
+  assert.equal(selectWithLiteralExpression.text, 'SELECT * FROM table')
+  assert.equal(selectWithLiteralExpression.sql, 'SELECT * FROM table')
+  assert.equal(selectWithLiteralExpression.debug, 'SELECT * FROM table')
 })
 
 test('should be able to use SQL.glue within template literal', t => {
@@ -523,20 +523,19 @@ test('should be able to use SQL.glue within template literal', t => {
     idValues,
     ','
   )}) AND name IN (${SQL.glue(nameValues, ',')}) AND post=${post}`
-  t.equal(
+  assert.equal(
     sql.text,
     'UPDATE my_table SET active = FALSE WHERE pre=$1 AND id IN ($2,$3,$4) AND name IN ($5,$6,$7) AND post=$8'
   )
-  t.equal(
+  assert.equal(
     sql.sql,
     'UPDATE my_table SET active = FALSE WHERE pre=? AND id IN (?,?,?) AND name IN (?,?,?) AND post=?'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     "UPDATE my_table SET active = FALSE WHERE pre='A' AND id IN (1,'2','three') AND name IN ('Bee','Cee','Dee') AND post='B'"
   )
-  t.same(sql.values, ['A', 1, '2', 'three', 'Bee', 'Cee', 'Dee', 'B'])
-  t.end()
+  assert.deepStrictEqual(sql.values, ['A', 1, '2', 'three', 'Bee', 'Cee', 'Dee', 'B'])
 })
 
 test('should be able to use nested SQLStatements in template literal', t => {
@@ -545,20 +544,19 @@ test('should be able to use nested SQLStatements in template literal', t => {
   const c = 'C'
   const d = 'D'
   const sql = SQL`UPDATE my_table SET active = FALSE WHERE a=${a} AND ${SQL`b=${b} AND ${SQL`c=${c}`}`} AND d=${d}`
-  t.equal(
+  assert.equal(
     sql.text,
     'UPDATE my_table SET active = FALSE WHERE a=$1 AND b=$2 AND c=$3 AND d=$4'
   )
-  t.equal(
+  assert.equal(
     sql.sql,
     'UPDATE my_table SET active = FALSE WHERE a=? AND b=? AND c=? AND d=?'
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     "UPDATE my_table SET active = FALSE WHERE a='A' AND b='B' AND c='C' AND d='D'"
   )
-  t.same(sql.values, ['A', 'B', 'C', 'D'])
-  t.end()
+  assert.deepStrictEqual(sql.values, ['A', 'B', 'C', 'D'])
 })
 
 test('should be able to use the result of SQL.glue([SQL``, SQL``], separator) result with multiple values inside the first element of SQL.glue', t => {
@@ -576,18 +574,17 @@ test('should be able to use the result of SQL.glue([SQL``, SQL``], separator) re
   ]
 
   const sql = SQL`SELECT tsd.* FROM data tsd WHERE ${SQL.glue(filters, ' AND ')}`
-  t.equal(
+  assert.equal(
     sql.text,
     'SELECT tsd.* FROM data tsd WHERE tsd.id IN ($1 , $2 , $3) AND tsd.name = $4'
   )
-  t.same(
+  assert.deepStrictEqual(
     sql.values, [1, 2, 3, 'foo']
   )
-  t.equal(
+  assert.equal(
     sql.debug,
     "SELECT tsd.* FROM data tsd WHERE tsd.id IN (1 , 2 , 3) AND tsd.name = 'foo'"
   )
-  t.end()
 })
 
 test('examples in the readme work as expected', t => {
@@ -604,7 +601,7 @@ test('examples in the readme work as expected', t => {
       updates,
       ' , '
     )} WHERE id = ${userId}`
-    t.equal(sql.text, 'UPDATE users SET name = $1 , email = $2 WHERE id = $3')
+    assert.equal(sql.text, 'UPDATE users SET name = $1 , email = $2 WHERE id = $3')
   }
   {
     const ids = [1, 2, 3]
@@ -618,7 +615,7 @@ test('examples in the readme work as expected', t => {
         ' , '
       )})
     `
-    t.equal(
+    assert.equal(
       sql.text,
       `UPDATE users
 SET property = $1
@@ -634,17 +631,16 @@ IN ($2 , $3 , $4)`
       { id: 3, name: 'something-other' }
     ]
 
-    const sql = SQL`INSERT INTO users (id, name) VALUES 
+    const sql = SQL`INSERT INTO users (id, name) VALUES
       ${SQL.glue(
         users.map(user => SQL`(${user.id},${user.name}})`),
         ' , '
       )}
     `
-    t.equal(
+    assert.equal(
       sql.text,
       `INSERT INTO users (id, name) VALUES
 ($1,$2}) , ($3,$4}) , ($5,$6})`
     )
   }
-  t.end()
 })
