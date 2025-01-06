@@ -316,3 +316,5 @@ Copyright NearForm 2021. Licensed under
 [5]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square
 [6]: https://github.com/feross/standard
 [7]: https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)
+
+[![banner](https://raw.githubusercontent.com/nearform/.github/refs/heads/master/assets/os-banner-green.svg)](https://www.nearform.com/contact/?utm_source=open-source&utm_medium=banner&utm_campaign=os-project-pages)
