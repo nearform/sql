@@ -1,190 +1,135 @@
-'use strict'
-const inspect = Symbol.for('nodejs.util.inspect.custom')
-const wrapped = Symbol('wrapped')
+'use strict';
 
-const quoteIdentifier = require('./quoteIdentifier')
+const inspect = Symbol.for('nodejs.util.inspect.custom');
+const wrapped = Symbol('wrapped');
+const quoteIdentifier = require('./quoteIdentifier');
 
 class SqlStatement {
-  constructor (strings, values) {
+  constructor(strings, values) {
     if (values.some(value => value === undefined)) {
-      throw new Error(
-        'SQL`...` strings cannot take `undefined` as values as this can generate invalid sql.'
-      )
+      throw new Error('SQL`...` strings cannot take `undefined` as values as this can generate invalid SQL.');
     }
-    this.strings = strings
-    this._values = values
+    this.strings = strings;
+    this._values = values;
   }
 
-  glue (pieces, separator) {
-    const result = { strings: [], values: [] }
-    let carryover
+  glue(pieces, separator) {
+    const result = { strings: [], values: [] };
+    let carryover;
+
     for (let i = 0; i < pieces.length; i++) {
-      const strings = Array.from(pieces[i].strings)
+      const strings = [...pieces[i].strings];
       if (i > 0) {
-        strings[0] = carryover + separator + strings[0]
+        strings[0] = carryover + separator + strings[0];
       }
-      carryover = strings.splice(-1)[0]
-      result.strings.push.apply(result.strings, strings)
-      result.values.push.apply(result.values, pieces[i]._values)
+      carryover = strings.pop();
+      result.strings.push(...strings);
+      result.values.push(...pieces[i]._values);
     }
 
-    result.strings.push(carryover)
+    result.strings.push(carryover + ' ');
 
-    result.strings[result.strings.length - 1] += ' '
-
-    return new SqlStatement(result.strings, result.values)
+    return new SqlStatement(result.strings, result.values);
   }
 
-  /**
-   * A function that accepts an array of objects and a mapper function
-   * It returns a clean SQL format using the object properties defined in the mapper function
-   */
-  map (array, mapFunc = i => i) {
-    if ((mapFunc instanceof Function) && array?.length > 0) {
-      return this.glue(
-        array.map(mapFunc).map((item) => SQL`${item}`),
-        ','
-      )
-    }
-    return null
+  map(array, mapFunc = i => i) {
+    return array?.length > 0 && mapFunc instanceof Function
+      ? this.glue(array.map(mapFunc).map(item => SQL`${item}`), ',')
+      : null;
   }
 
-  _generateString (type, namedValueOffset = 0) {
-    let text = this.strings[0]
-    let valueOffset = 0
-    const values = [...this._values]
+  _generateString(type, namedValueOffset = 0) {
+    let text = this.strings[0];
+    let valueOffset = 0;
+    const values = [...this._values];
 
     for (let i = 1; i < this.strings.length; i++) {
-      const valueIndex = i - 1 + valueOffset
-      const valueContainer = values[valueIndex]
+      const valueIndex = i - 1 + valueOffset;
+      const valueContainer = values[valueIndex];
 
-      if (valueContainer && valueContainer[wrapped]) {
-        text += `${valueContainer.transform(type)}${this.strings[i]}`
-        values.splice(valueIndex, 1)
-        valueOffset--
+      if (valueContainer?.[wrapped]) {
+        text += `${valueContainer.transform(type)}${this.strings[i]}`;
+        values.splice(valueIndex, 1);
+        valueOffset--;
       } else if (valueContainer instanceof SqlStatement) {
-        text += `${valueContainer._generateString(
-          type,
-          valueIndex + namedValueOffset
-        )}${this.strings[i]}`
-        valueOffset += valueContainer.values.length - 1
-        values.splice(valueIndex, 1, ...valueContainer.values)
+        text += `${valueContainer._generateString(type, valueIndex + namedValueOffset)}${this.strings[i]}`;
+        valueOffset += valueContainer.values.length - 1;
+        values.splice(valueIndex, 1, ...valueContainer.values);
       } else {
-        let delimiter = '?'
-        if (type === 'pg') {
-          delimiter = '$' + (i + valueOffset + namedValueOffset)
-        }
-
-        text += delimiter + this.strings[i]
+        text += (type === 'pg' ? `$${i + valueOffset + namedValueOffset}` : '?') + this.strings[i];
       }
     }
 
-    return text.replace(/\s+$/gm, ' ').replace(/^\s+|\s+$/gm, '')
+    return text.trim().replace(/\s+/g, ' ');
   }
 
-  get debug () {
-    let text = this.strings[0]
+  get debug() {
+    return this.strings.reduce((text, str, i) => {
+      if (i === 0) return str;
 
-    for (let i = 1; i < this.strings.length; i++) {
-      let data = this._values[i - 1]
-      let quote = "'"
-      if (data && data[wrapped]) {
-        data = data.transform()
-        quote = ''
-      } else if (data instanceof SqlStatement) {
-        data = data.debug
-        quote = ''
+      let value = this._values[i - 1];
+      let quote = "'";
+
+      if (value?.[wrapped]) {
+        value = value.transform();
+        quote = '';
+      } else if (value instanceof SqlStatement) {
+        value = value.debug;
+        quote = '';
       }
-      typeof data === 'string' ? (text += quote + data + quote) : (text += data)
-      text += this.strings[i]
+
+      return text + (typeof value === 'string' ? quote + value + quote : value) + str;
+    }).trim().replace(/\s+/g, ' ');
+  }
+
+  [inspect]() {
+    return `SQL << ${this.debug} >>`;
+  }
+
+  get text() {
+    return this._generateString('pg');
+  }
+
+  get sql() {
+    return this._generateString('mysql');
+  }
+
+  get values() {
+    return this._values.reduce((acc, v) => {
+      if (!v?.[wrapped]) {
+        acc.push(...(v instanceof SqlStatement ? v.values : [v]));
+      }
+      return acc;
+    }, []);
+  }
+
+  append(statement, options) {
+    if (!statement || !(statement instanceof SqlStatement)) {
+      throw new Error('"append" accepts only template strings prefixed with SQL (SQL`...`)');
     }
 
-    return text.replace(/\s+$/gm, ' ').replace(/^\s+|\s+$/gm, '')
-  }
-
-  [inspect] () {
-    return `SQL << ${this.debug} >>`
-  }
-
-  get text () {
-    return this._generateString('pg')
-  }
-
-  get sql () {
-    return this._generateString('mysql')
-  }
-
-  get values () {
-    return this._values
-      .filter(v => !v || !v[wrapped])
-      .reduce((acc, v) => {
-        if (v instanceof SqlStatement) {
-          acc.push(...v.values)
-        } else {
-          acc.push(v)
-        }
-        return acc
-      }, [])
-  }
-
-  /**
-   * @deprecated Please append within template literals, e.g. SQL`SELECT * ${sql}`
-   */
-  append (statement, options) {
-    if (!statement) {
-      return this
+    if (options?.unsafe) {
+      const text = statement.strings.reduce((acc, str, i) => acc + str + (statement.values[i] ?? ''), '');
+      this.strings[this.strings.length - 1] += text;
+      return this;
     }
 
-    if (!(statement instanceof SqlStatement)) {
-      throw new Error(
-        '"append" accepts only template string prefixed with SQL (SQL`...`)'
-      )
-    }
+    this.strings = [...this.strings.slice(0, -1), this.strings.at(-1) + statement.strings[0], ...statement.strings.slice(1)];
+    this._values.push(...statement._values);
 
-    if (options && options.unsafe === true) {
-      const text = statement.strings.reduce((acc, string, i) => {
-        acc = `${acc}${string}${statement.values[i] ? statement.values[i] : ''}`
-        return acc
-      }, '')
-
-      const strings = this.strings.slice(0)
-      strings[this.strings.length - 1] += text
-
-      this.strings = strings
-
-      return this
-    }
-
-    const last = this.strings[this.strings.length - 1]
-    const [first, ...rest] = statement.strings
-
-    this.strings = [...this.strings.slice(0, -1), last + first, ...rest]
-
-    this._values.push.apply(this._values, statement._values)
-
-    return this
+    return this;
   }
 }
 
-function SQL (strings, ...values) {
-  return new SqlStatement(strings, values)
+function SQL(strings, ...values) {
+  return new SqlStatement(strings, values);
 }
 
-SQL.glue = SqlStatement.prototype.glue
-SQL.map = SqlStatement.prototype.map
+SQL.glue = SqlStatement.prototype.glue;
+SQL.map = SqlStatement.prototype.map;
 
-module.exports = SQL
-module.exports.SQL = SQL
-module.exports.default = SQL
-module.exports.unsafe = value => ({
-  transform () {
-    return value
-  },
-  [wrapped]: true
-})
-module.exports.quoteIdent = value => ({
-  transform (type) {
-    return quoteIdentifier(value, type)
-  },
-  [wrapped]: true
-})
+module.exports = SQL;
+module.exports.SQL = SQL;
+module.exports.default = SQL;
+module.exports.unsafe = value => ({ transform: () => value, [wrapped]: true });
+module.exports.quoteIdent = value => ({ transform: type => quoteIdentifier(value, type), [wrapped]: true });
