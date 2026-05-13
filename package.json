@@ -9,7 +9,7 @@
     "posttest": "tsd",
     "test:security": "node ./sqlmap/sqlmap.js",
     "test:typescript": "tsd",
-    "pretest:security": "napa https://github.com/sqlmapproject/sqlmap && node ./sqlmap/db-init.js",
+    "pretest:security": "git clone --depth=1 https://github.com/sqlmapproject/sqlmap node_modules/sqlmap && node ./sqlmap/db-init.js",
     "lint": "standard",
     "benchmark": "node benchmark/index.js"
   },
@@ -24,15 +24,14 @@
   },
   "homepage": "https://github.com/nearform/sql#readme",
   "devDependencies": {
-    "@fastify/postgres": "^5.2.0",
-    "async": "^3.2.0",
+    "@fastify/postgres": "^6.0.2",
+    "async": "^3.2.6",
     "benchmark": "^2.1.4",
-    "fastify": "^4.0.1",
-    "jsonfile": "^6.1.0",
-    "napa": "^3.0.0",
-    "pg": "^8.6.0",
+    "fastify": "^5.8.5",
+    "jsonfile": "^6.2.1",
+    "pg": "^8.20.0",
     "sql-template-strings": "^2.2.2",
-    "standard": "^17.0.0",
+    "standard": "^17.1.2",
     "tsd": "^0.33.0"
   },
   "standard": {
