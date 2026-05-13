@@ -23,6 +23,7 @@ jobs:
           - 16
           - 17
           - 18
+    name: "Node ${{ matrix.node-version }} - PostgreSQL ${{ matrix.postgres-version }}"
     services:
       postgres:
         image: postgres:${{ matrix.postgres-version }}-alpine
