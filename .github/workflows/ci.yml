@@ -17,9 +17,15 @@ jobs:
           - 24
         os:
           - ubuntu-latest
+        postgres-version:
+          - 14
+          - 15
+          - 16
+          - 17
+          - 18
     services:
       postgres:
-        image: postgres:9-alpine
+        image: postgres:${{ matrix.postgres-version }}-alpine
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
