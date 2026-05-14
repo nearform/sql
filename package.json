@@ -6,9 +6,9 @@
   "types": "./SQL.d.ts",
   "scripts": {
     "test": "node --test *.test.js",
-    "posttest": "tsd",
+    "posttest": "tstyche",
     "test:security": "node ./sqlmap/sqlmap.js",
-    "test:typescript": "tsd",
+    "test:typescript": "tstyche",
     "pretest:security": "git clone --depth=1 https://github.com/sqlmapproject/sqlmap node_modules/sqlmap && node ./sqlmap/db-init.js",
     "lint": "standard",
     "benchmark": "node benchmark/index.js"
@@ -32,7 +32,7 @@
     "pg": "^8.20.0",
     "sql-template-strings": "^2.2.2",
     "standard": "^17.1.2",
-    "tsd": "^0.33.0"
+    "tstyche": "^7.1.0"
   },
   "standard": {
     "ignore": [
