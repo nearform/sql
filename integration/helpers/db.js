@@ -52,20 +52,20 @@ async function withMysql2 () {
   }
 }
 
-// The legacy `mysql` driver cannot speak MySQL 8's default
-// `caching_sha2_password` auth. mysql2 can, so we use it to switch the account
-// to `mysql_native_password` first. This works identically locally and in CI
-// without needing a container `command` override (unsupported by GitHub
-// Actions service containers).
+// The legacy `mysql` driver cannot speak MySQL's default `caching_sha2_password`
+// auth — it only supports `mysql_native_password`. mysql2 can connect, so we use
+// it to switch the account to native_password first. This requires a MySQL 8.0
+// server (config.mysqlLegacy): native_password is removed/disabled in 8.4+/9, so
+// the plugin wouldn't even be loaded there.
 async function ensureNativePassword () {
   const mysql = require('mysql2/promise')
-  const conn = await mysql.createConnection(config.mysql)
+  const conn = await mysql.createConnection(config.mysqlLegacy)
   try {
     // We connect over TCP, so the account is `<user>@'%'`. `?` placeholders are
     // escaped client-side (text protocol) into a valid `'user'@'%'` account.
     await conn.query(
       "ALTER USER ?@'%' IDENTIFIED WITH mysql_native_password BY ?",
-      [config.mysql.user, config.mysql.password]
+      [config.mysqlLegacy.user, config.mysqlLegacy.password]
     )
   } finally {
     await conn.end()
@@ -76,7 +76,7 @@ async function ensureNativePassword () {
 async function withMysql () {
   await ensureNativePassword()
   const mysql = require('mysql')
-  const conn = mysql.createConnection(config.mysql)
+  const conn = mysql.createConnection(config.mysqlLegacy)
   await new Promise((resolve, reject) =>
     conn.connect(err => (err ? reject(err) : resolve()))
   )
