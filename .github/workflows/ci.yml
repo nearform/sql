@@ -7,7 +7,7 @@ on:
     branches:
       - master
 jobs:
-  build-lint-test:
+  postgres:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -34,24 +34,11 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: mysql
-          MYSQL_DATABASE: sqlmap
-        ports:
-          - 3306:3306
-        options: --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot -pmysql --silent"
-          --health-interval 10s --health-timeout 5s --health-retries 10
     env:
       PGPASS: postgres
       PGUSER: postgres
       PGDB: sqlmap
       PGHOST: localhost
-      MYSQLHOST: 127.0.0.1
-      MYSQLUSER: root
-      MYSQLPASS: mysql
-      MYSQLDB: sqlmap
     steps:
       - name: Checkout source code
         uses: actions/checkout@v6
@@ -65,12 +52,55 @@ jobs:
         run: npm run lint
       - name: Test
         run: npm test
-      - name: Test Integration
-        run: npm run test:integration
+      - name: Test Integration (PostgreSQL)
+        run: npm run test:integration:pg
       - name: Test Security
         run: npm run test:security
+  mysql:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version:
+          - 24
+          - 26
+        os:
+          - ubuntu-latest
+        # Pinned to 8.0: the legacy `mysql` driver requires the
+        # mysql_native_password plugin, which 8.4+ disables by default and
+        # can't be re-enabled via a service container (no command override).
+        mysql-version:
+          - "8.0"
+    name: "Node ${{ matrix.node-version }} - MySQL ${{ matrix.mysql-version }}"
+    services:
+      mysql:
+        image: mysql:${{ matrix.mysql-version }}
+        env:
+          MYSQL_ROOT_PASSWORD: mysql
+          MYSQL_DATABASE: sqlmap
+        ports:
+          - 3306:3306
+        options: --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot -pmysql --silent"
+          --health-interval 10s --health-timeout 5s --health-retries 10
+    env:
+      MYSQLHOST: 127.0.0.1
+      MYSQLUSER: root
+      MYSQLPASS: mysql
+      MYSQLDB: sqlmap
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v6
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install
+        run: npm install
+      - name: Test Integration (MySQL)
+        run: npm run test:integration:mysql
   automerge:
-    needs: build-lint-test
+    needs:
+      - postgres
+      - mysql
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write

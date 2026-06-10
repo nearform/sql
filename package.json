@@ -10,6 +10,8 @@
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down -v",
     "test:integration": "node --test --test-concurrency=1 integration/**/*.test.js",
+    "test:integration:pg": "node --test integration/SQL.pg.integration.test.js",
+    "test:integration:mysql": "node --test --test-concurrency=1 integration/SQL.mysql.integration.test.js integration/SQL.mysql2.integration.test.js",
     "test:integration:docker": "npm run db:up && npm run test:integration; npm run db:down",
     "test:security": "node ./sqlmap/sqlmap.js",
     "test:typescript": "tstyche",
