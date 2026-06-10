@@ -35,11 +35,24 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: mysql
+          MYSQL_DATABASE: sqlmap
+        ports:
+          - 3306:3306
+        options: --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot -pmysql --silent"
+          --health-interval 10s --health-timeout 5s --health-retries 10
     env:
       PGPASS: postgres
       PGUSER: postgres
       PGDB: sqlmap
       PGHOST: localhost
+      MYSQLHOST: 127.0.0.1
+      MYSQLUSER: root
+      MYSQLPASS: mysql
+      MYSQLDB: sqlmap
     steps:
       - name: Checkout source code
         uses: actions/checkout@v6
@@ -53,6 +66,8 @@ jobs:
         run: npm run lint
       - name: Test
         run: npm test
+      - name: Test Integration
+        run: npm run test:integration
       - name: Test Security
         run: npm run test:security
   automerge:

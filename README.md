@@ -289,12 +289,28 @@ const pascalOrCamelToSnake = str =>
 This module can be tested and reported on in a variety of ways...
 
 ```sh
-npm run test            # runs tap based unit test suite.
-npm run test:security   # runs sqlmap security tests.
-npm run test:typescript # runs type definition tests.
-npm run coverage        # generates a coverage report in docs dir.
-npm run lint            # lints via standardJS.
+npm run test                  # runs the node:test unit test suite.
+npm run test:integration      # runs integration tests against running PostgreSQL & MySQL.
+npm run test:integration:docker # spins up DBs via docker compose, runs integration tests, tears down.
+npm run test:security         # runs sqlmap security tests.
+npm run test:typescript       # runs type definition tests.
+npm run coverage              # generates a coverage report in docs dir.
+npm run lint                  # lints via standardJS.
 ```
+
+The integration suite executes queries built by every public API against real
+PostgreSQL and MySQL instances (the latter via both the `mysql` and `mysql2`
+drivers), verifying the generated SQL is valid and that interpolated values are
+stored as literals. To run it locally:
+
+```sh
+npm run db:up             # start postgres + mysql via docker compose (waits for healthy)
+npm run test:integration  # run the suite
+npm run db:down           # tear down
+```
+
+Connection settings default to the docker-compose services and can be overridden
+with `PGHOST/PGPORT/PGUSER/PGPASS/PGDB` and `MYSQLHOST/MYSQLPORT/MYSQLUSER/MYSQLPASS/MYSQLDB`.
 
 ## Benchmark
 
