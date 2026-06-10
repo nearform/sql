@@ -34,11 +34,11 @@
     "fastify": "^5.8.5",
     "jsonfile": "^6.2.1",
     "mysql": "^2.18.1",
-    "mysql2": "^3.11.0",
-    "pg": "^8.20.0",
+    "mysql2": "^3.22.5",
+    "pg": "^8.21.0",
     "sql-template-strings": "^2.2.2",
     "standard": "^17.1.2",
-    "tstyche": "^7.1.0"
+    "tstyche": "^7.2.1"
   },
   "standard": {
     "ignore": [
