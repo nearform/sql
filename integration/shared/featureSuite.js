@@ -158,6 +158,21 @@ module.exports = function runFeatureSuite (test, getDb) {
     assert.equal(Number(rows[0].id), 50)
   })
 
+  test('deprecated append with { unsafe: true } interpolates literally', async () => {
+    const db = getDb()
+    await reset(db)
+    await db.query(SQL`INSERT INTO users (id, username) VALUES (${55}, ${'unsafe-append'})`)
+    // unsafe append inlines the value as a literal (no placeholder) — here a
+    // trusted column name in an ORDER BY clause. Executing it proves the
+    // unsafe branch of append (SQL.js) produces valid SQL.
+    const orderColumn = 'username' // trusted, not user input
+    const sql = SQL`SELECT id, username FROM users WHERE username = ${'unsafe-append'}`
+    sql.append(SQL` ORDER BY ${orderColumn}`, { unsafe: true })
+    const rows = await db.query(sql)
+    assert.equal(rows.length, 1)
+    assert.equal(Number(rows[0].id), 55)
+  })
+
   test('null values round-trip', async () => {
     const db = getDb()
     await reset(db)

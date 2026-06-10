@@ -20,7 +20,11 @@ const mysql = {
   password: process.env.MYSQLPASS || 'mysql',
   database: process.env.MYSQLDB || 'sqlmap',
   // utf8mb4 so 4-byte characters (e.g. emoji) round-trip.
-  charset: 'utf8mb4'
+  charset: 'utf8mb4',
+  // A fresh caching_sha2_password account over a non-TLS connection needs the
+  // server's public key to complete auth; allow retrieving it. Fine for local/
+  // CI test infra (no untrusted network).
+  allowPublicKeyRetrieval: true
 }
 
 // Separate config for the legacy `mysql` driver. It only supports
@@ -33,7 +37,10 @@ const mysqlLegacy = {
   user: process.env.MYSQLLEGACYUSER || 'root',
   password: process.env.MYSQLLEGACYPASS || 'mysql',
   database: process.env.MYSQLLEGACYDB || 'sqlmap',
-  charset: 'utf8mb4'
+  charset: 'utf8mb4',
+  // Used by the mysql2 connection that flips the account to native_password
+  // (see ensureNativePassword); the legacy `mysql` driver ignores it.
+  allowPublicKeyRetrieval: true
 }
 
 module.exports = { pg, mysql, mysqlLegacy }
