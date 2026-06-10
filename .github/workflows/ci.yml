@@ -69,7 +69,8 @@ jobs:
         # mysql_native_password plugin, which 8.4+ disables by default and
         # can't be re-enabled via a service container (no command override).
         mysql-version:
-          - "8.0"
+          - 8
+          - 9
     name: "Node ${{ matrix.node-version }} - MySQL ${{ matrix.mysql-version }}"
     services:
       mysql:

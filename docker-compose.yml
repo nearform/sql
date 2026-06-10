@@ -15,7 +15,7 @@ services:
       retries: 10
 
   mysql:
-    image: mysql:8.0
+    image: mysql:9
     environment:
       MYSQL_ROOT_PASSWORD: mysql
       MYSQL_DATABASE: sqlmap
