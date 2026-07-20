@@ -7,6 +7,13 @@
   "scripts": {
     "test": "node --test *.test.js",
     "posttest": "tstyche",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down -v",
+    "test:integration": "node --test --test-concurrency=1 integration/**/*.test.js",
+    "test:integration:pg": "node --test integration/SQL.pg.integration.test.js",
+    "test:integration:mysql2": "node --test integration/SQL.mysql2.integration.test.js",
+    "test:integration:mysql": "node --test integration/SQL.mysql.integration.test.js",
+    "test:integration:docker": "npm run db:up && npm run test:integration; npm run db:down",
     "test:security": "node ./sqlmap/sqlmap.js",
     "test:typescript": "tstyche",
     "pretest:security": "git clone --depth=1 https://github.com/sqlmapproject/sqlmap node_modules/sqlmap && node ./sqlmap/db-init.js",
@@ -29,10 +36,12 @@
     "benchmark": "^2.1.4",
     "fastify": "^5.8.5",
     "jsonfile": "^6.2.1",
-    "pg": "^8.20.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.22.5",
+    "pg": "^8.21.0",
     "sql-template-strings": "^2.2.2",
     "standard": "^17.1.2",
-    "tstyche": "^7.1.0"
+    "tstyche": "^7.2.1"
   },
   "standard": {
     "ignore": [

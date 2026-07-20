@@ -289,12 +289,39 @@ const pascalOrCamelToSnake = str =>
 This module can be tested and reported on in a variety of ways...
 
 ```sh
-npm run test            # runs tap based unit test suite.
-npm run test:security   # runs sqlmap security tests.
-npm run test:typescript # runs type definition tests.
-npm run coverage        # generates a coverage report in docs dir.
-npm run lint            # lints via standardJS.
+npm run test                    # runs the node:test unit test suite.
+npm run test:integration        # runs all integration tests against running PostgreSQL & MySQL.
+npm run test:integration:pg     # PostgreSQL only (pg driver).
+npm run test:integration:mysql2 # MySQL only (mysql2 driver).
+npm run test:integration:mysql  # MySQL only (legacy mysql driver, requires MySQL 8.0).
+npm run test:integration:docker # spins up DBs via docker compose, runs all integration tests, tears down.
+npm run test:security           # runs sqlmap security tests.
+npm run test:typescript         # runs type definition tests.
+npm run coverage                # generates a coverage report in docs dir.
+npm run lint                    # lints via standardJS.
 ```
+
+The integration suite executes queries built by every public API against real
+PostgreSQL and MySQL instances (the latter via both the `mysql` and `mysql2`
+drivers), verifying the generated SQL is valid and that interpolated values are
+stored as literals. To run it locally:
+
+```sh
+npm run db:up             # start postgres + mysql (9) + mysql8 (8.0) via docker compose
+npm run test:integration  # run the suite
+npm run db:down           # tear down
+```
+
+> **Note:** the legacy `mysql` driver only supports `mysql_native_password`,
+> which is removed/disabled in MySQL 8.4+/9. It therefore runs against a
+> dedicated MySQL 8.0 service (the `mysql8` container, exposed on port `3307`),
+> while `mysql2` runs against the modern `mysql` container.
+
+Connection settings default to the docker-compose services and can be overridden:
+
+- PostgreSQL — `PGHOST/PGPORT/PGUSER/PGPASS/PGDB`
+- MySQL (mysql2) — `MYSQLHOST/MYSQLPORT/MYSQLUSER/MYSQLPASS/MYSQLDB` (default port `3306`)
+- MySQL (legacy mysql) — `MYSQLLEGACYHOST/MYSQLLEGACYPORT/MYSQLLEGACYUSER/MYSQLLEGACYPASS/MYSQLLEGACYDB` (default port `3307`)
 
 ## Benchmark
 
